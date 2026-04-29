@@ -3,7 +3,7 @@ import { AuthProvider } from './contexts/AuthContext';
 
 // Public Pages
 import Home from './pages/public/Home';
-import Pool from './pages/public/Pool';
+import Waifus from './pages/public/Waifus';
 
 // Auth Pages
 import Login from './pages/auth/Login';
@@ -11,33 +11,15 @@ import Register from './pages/auth/Register';
 
 // Player Pages
 import PlayerDashboard from './pages/player/PlayerDashboard';
+import Gacha from './pages/player/Gacha';
+import History from './pages/player/History';
+import Rank from './pages/player/Rank';
 
 // Admin Pages
+import AdminLogin from './pages/auth/AdminLogin';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminWaifus from './pages/admin/AdminWaifus';
-
-// Placeholder Pages sementara (Nanti kita pisah ke folder src/pages/...)
-const AdminLogin = () => (
-  <div className="p-4 text-center mt-10">
-    <h1>Admin Login</h1>
-  </div>
-);
-
-const RollGacha = () => (
-  <div className="p-4 text-center mt-10">
-    <h1>Roll Gacha</h1>
-  </div>
-);
-const History = () => (
-  <div className="p-4 text-center mt-10">
-    <h1>Gacha History</h1>
-  </div>
-);
-const Scoreboard = () => (
-  <div className="p-4 text-center mt-10">
-    <h1>Scoreboard</h1>
-  </div>
-);
+import AdminRoute from './components/AdminRoute';
 
 export default function App() {
   return (
@@ -46,22 +28,36 @@ export default function App() {
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Home />} />
-          <Route path="/pool" element={<Pool />} />
-          <Route path="/scoreboard" element={<Scoreboard />} />
+          <Route path="/waifus" element={<Waifus />} />
+          <Route path="/rank" element={<Rank />} />
 
           {/* Auth Routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/admin-login" element={<AdminLogin />} />
 
-          {/* Player Routes (Nanti kita proteksi khusus yang sudah login) */}
+          {/* Player Routes (Sudah ada proteksi di dalam komponen) */}
           <Route path="/dashboard" element={<PlayerDashboard />} />
-          <Route path="/roll" element={<RollGacha />} />
+          <Route path="/gacha" element={<Gacha />} />
           <Route path="/history" element={<History />} />
 
-          {/* Admin Routes (Nanti kita proteksi khusus admin) */}
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/admin/waifus" element={<AdminWaifus />} />
+          {/* Admin Routes (Proteksi Level Route) */}
+          <Route
+            path="/admin"
+            element={
+              <AdminRoute>
+                <AdminDashboard />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/waifus"
+            element={
+              <AdminRoute>
+                <AdminWaifus />
+              </AdminRoute>
+            }
+          />
         </Routes>
       </Router>
     </AuthProvider>

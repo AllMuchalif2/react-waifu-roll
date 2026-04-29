@@ -4,7 +4,7 @@ import BottomNav from '../../components/BottomNav';
 import WaifuCard from '../../components/WaifuCard';
 import { supabase } from '../../lib/supabase';
 
-export default function Pool() {
+export default function Waifus() {
   const [waifus, setWaifus] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');

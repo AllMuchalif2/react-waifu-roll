@@ -66,6 +66,11 @@ export default function Login() {
             </Link>
           </div>
         </div>
+        <div className="mt-8 text-center">
+          <Link to="/" className="inline-flex items-center gap-2 text-sm font-bold text-text-dark hover:text-primary-blue transition-colors no-underline">
+            <i className="fa-solid fa-arrow-left"></i> Kembali ke Home
+          </Link>
+        </div>
       </main>
     </>
   );

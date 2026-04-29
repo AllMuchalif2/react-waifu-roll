@@ -1,34 +1,128 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { supabase } from '../../lib/supabase';
 import Navbar from '../../components/Navbar';
 
 export default function AdminDashboard() {
+  const [stats, setStats] = useState({
+    totalPlayers: 0,
+    totalWaifus: 0,
+    tierCounts: {},
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchStats();
+  }, []);
+
+  const fetchStats = async () => {
+    setLoading(true);
+    // 1. Hitung total pemain
+    const { count: playersCount } = await supabase
+      .from('profiles')
+      .select('*', { count: 'exact', head: true });
+
+    // 2. Ambil semua waifu untuk hitung total & per tier
+    const { data: waifus } = await supabase.from('waifu_pool').select('tier');
+
+    if (waifus) {
+      const counts = waifus.reduce((acc, curr) => {
+        acc[curr.tier] = (acc[curr.tier] || 0) + 1;
+        return acc;
+      }, {});
+
+      setStats({
+        totalPlayers: playersCount || 0,
+        totalWaifus: waifus.length,
+        tierCounts: counts,
+      });
+    }
+    setLoading(false);
+  };
+
   return (
     <>
       <Navbar />
-      <main className="px-4 max-w-md mx-auto flex flex-col gap-6 text-center mt-4">
-        <div className="card-neo">
-          <div className="flex justify-center mb-2">
-            <i className="fa-solid fa-user-shield text-4xl text-danger"></i>
+      <main className="px-4 max-w-lg mx-auto pb-24 mt-4">
+        {/* Header Section */}
+        <div className="card-neo mb-6 border-danger shadow-[6px_6px_0px_#ff1744]">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-danger/10 rounded-xl flex items-center justify-center border-2 border-danger text-danger">
+              <i className="fa-solid fa-user-shield text-2xl"></i>
+            </div>
+            <div>
+              <h1 className="text-xl font-black uppercase text-text-dark">
+                Admin Control
+              </h1>
+              <p className="text-[0.7rem] font-bold opacity-60">
+                Dashboard Master & Statistik Sistem
+              </p>
+            </div>
           </div>
-          <h1 className="text-2xl mb-4 text-text-dark">Admin Panel</h1>
-          <p className="text-text-muted mb-6 font-medium">
-            Kelola data master MYBINI dan tambahkan waifu baru ke dalam pool.
-          </p>
-
-          <Link
-            to="/admin/waifus"
-            className="btn-neo btn-neo-danger no-underline"
-          >
-            <i className="fa-solid fa-database text-xl"></i> KELOLA WAIFU
-          </Link>
         </div>
 
-        <Link
-          to="/"
-          className="text-text-muted font-bold no-underline hover:text-primary-blue transition-colors"
-        >
-          &larr; Kembali ke Beranda
-        </Link>
+        {/* Stats Grid */}
+        <div className="grid grid-cols-2 gap-4 mb-6">
+          <div className="card-neo bg-primary-blue text-white p-4">
+            <div className="text-3xl font-black mb-1">
+              {loading ? '...' : stats.totalPlayers}
+            </div>
+            <div className="text-[0.6rem] font-bold uppercase tracking-wider opacity-80">
+              Total Players
+            </div>
+          </div>
+          <div className="card-neo bg-secondary-yellow text-text-dark p-4">
+            <div className="text-3xl font-black mb-1">
+              {loading ? '...' : stats.totalWaifus}
+            </div>
+            <div className="text-[0.6rem] font-bold uppercase tracking-wider opacity-80">
+              Total Waifus
+            </div>
+          </div>
+        </div>
+
+        {/* Tier Stats */}
+        <div className="card-neo mb-6">
+          <h3 className="text-sm font-black mb-4 flex items-center gap-2">
+            <i className="fa-solid fa-chart-pie text-primary-blue"></i>
+            DISTRIBUSI TIER
+          </h3>
+          <div className="grid grid-cols-3 gap-2">
+            {['LIMITED', 'UR', 'SSR', 'SR', 'S', 'R', 'A', 'B', 'C'].map(
+              (tier) => (
+                <div
+                  key={tier}
+                  className="bg-gray-100 p-2 rounded-lg border-2 border-text-dark/10 flex flex-col items-center"
+                >
+                  <span className="text-[0.6rem] font-black text-primary-blue">
+                    {tier}
+                  </span>
+                  <span className="text-lg font-black text-text-dark">
+                    {stats.tierCounts[tier] || 0}
+                  </span>
+                </div>
+              ),
+            )}
+          </div>
+        </div>
+
+        {/* Quick Links */}
+        <div className="flex flex-col gap-3">
+          <Link
+            to="/admin/waifus"
+            className="btn-neo btn-neo-danger no-underline flex items-center justify-center gap-3 py-4"
+          >
+            <i className="fa-solid fa-database text-xl"></i>
+            <span>KELOLA DATABASE WAIFU</span>
+          </Link>
+
+          <Link
+            to="/"
+            className="text-center text-sm font-bold text-text-muted no-underline hover:text-primary-blue transition-colors mt-2"
+          >
+            &larr; Kembali ke Beranda
+          </Link>
+        </div>
       </main>
     </>
   );

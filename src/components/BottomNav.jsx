@@ -1,52 +1,61 @@
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { supabase } from '../lib/supabase';
 
 export default function BottomNav() {
   const { user } = useAuth();
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    window.location.href = '/login';
-  };
-
-  // Fungsi utilitas untuk styling state aktif
+  // Helper untuk styling state aktif & base style
   const navClass = ({ isActive }) =>
-    `flex flex-col items-center text-[0.7rem] font-medium opacity-70 transition-opacity duration-200 no-underline text-white ${
-      isActive ? 'opacity-100 text-secondary-yellow' : ''
+    `flex flex-col items-center text-[0.65rem] font-bold transition-all duration-300 no-underline ${
+      isActive
+        ? 'text-secondary-yellow scale-110 opacity-100'
+        : 'text-white opacity-60'
     }`;
 
   return (
-    <nav className="fixed bottom-5 left-1/2 -translate-x-1/2 w-[calc(100%-40px)] max-w-[440px] h-[70px] bg-text-dark rounded-[24px] flex justify-around items-center z-50 shadow-[0_10px_25px_rgba(0,0,0,0.2)]">
+    <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-[400px] h-[70px] bg-text-dark/95 backdrop-blur-md rounded-[28px] flex justify-around items-center z-50 border-2 border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.3)]">
+      {/* 1. HOME */}
       <NavLink to="/" className={navClass}>
-        <i className="fa-solid fa-house text-2xl mb-1"></i>
-        <span>Home</span>
-      </NavLink>
-      <NavLink to="/roll" className={navClass}>
-        <i className="fa-solid fa-dice text-2xl mb-1"></i>
-        <span>Roll</span>
-      </NavLink>
-      <NavLink to="/pool" className={navClass}>
-        <i className="fa-solid fa-list text-2xl mb-1"></i>
-        <span>Pool</span>
-      </NavLink>
-      <NavLink to="/dashboard" className={navClass}>
-        <i className="fa-solid fa-heart text-2xl mb-1"></i>
-        <span>Collection</span>
+        <i className="fa-solid fa-house text-xl mb-1"></i>
+        <span>HOME</span>
       </NavLink>
 
+      {/* 2. WAIFU */}
+      <NavLink to="/waifus" className={navClass}>
+        <i className="fa-solid fa-heart text-xl mb-1"></i>
+        <span>WAIFU</span>
+      </NavLink>
+
+      {/* 3. GACHA (Highlighted Action) */}
+      <NavLink
+        to="/gacha"
+        className={({ isActive }) =>
+          `flex flex-col items-center justify-center w-14 h-14 bg-primary-blue rounded-2xl border-4 border-text-dark -translate-y-4 shadow-[0_10px_20px_rgba(0,123,255,0.4)] transition-all ${
+            isActive
+              ? 'bg-secondary-yellow text-text-dark scale-110'
+              : 'text-white'
+          }`
+        }
+      >
+        <i className="fa-solid fa-dice text-2xl"></i>
+      </NavLink>
+
+      {/* 4. RANK */}
+      <NavLink to="/rank" className={navClass}>
+        <i className="fa-solid fa-trophy text-xl mb-1"></i>
+        <span>RANK</span>
+      </NavLink>
+
+      {/* 5. PLAYER / LOGIN */}
       {user ? (
-        <button
-          onClick={handleLogout}
-          className="flex flex-col items-center text-[0.7rem] font-medium opacity-70 transition-opacity duration-200 text-white bg-transparent border-none cursor-pointer hover:opacity-100"
-        >
-          <i className="fa-solid fa-right-from-bracket text-2xl mb-1"></i>
-          <span>Logout</span>
-        </button>
+        <NavLink to="/dashboard" className={navClass}>
+          <i className="fa-solid fa-user text-xl mb-1"></i>
+          <span>PLAYER</span>
+        </NavLink>
       ) : (
         <NavLink to="/login" className={navClass}>
-          <i className="fa-solid fa-user text-2xl mb-1"></i>
-          <span>Login</span>
+          <i className="fa-solid fa-circle-user text-xl mb-1"></i>
+          <span>LOGIN</span>
         </NavLink>
       )}
     </nav>

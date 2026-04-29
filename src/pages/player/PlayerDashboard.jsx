@@ -103,6 +103,11 @@ export default function PlayerDashboard() {
     fetchInventory();
   };
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/login');
+  };
+
   if (authLoading || !profile)
     return <div className="text-center mt-20 font-bold">Memuat Profil...</div>;
 
@@ -118,14 +123,18 @@ export default function PlayerDashboard() {
                 {profile.username}
               </h2>
               <p className="text-xs opacity-70 font-mono mt-1">
-                ID: {user.id.split('-')[0]}
+                {user.email} | {profile.role === 'admin' && 'ADMIN'}
               </p>
             </div>
-            {profile.role === 'admin' && (
-              <span className="px-2 py-1 bg-danger rounded-md text-xs font-black">
-                ADMIN
-              </span>
-            )}
+            <div className="flex flex-col items-end gap-2">
+              <button
+                onClick={handleLogout}
+                className="text-[0.6rem] bg-white/10 hover:bg-danger/20 px-2 py-1 rounded-md transition-colors border border-white/20 uppercase font-black tracking-tighter"
+              >
+                <i className="fa-solid fa-right-from-bracket mr-1"></i>
+                Keluar
+              </button>
+            </div>
           </div>
 
           <div className="flex gap-4 mb-4">
@@ -145,12 +154,20 @@ export default function PlayerDashboard() {
             </div>
           </div>
 
-          <button
-            onClick={handleDailyClaim}
-            className="btn-neo btn-neo-secondary w-full"
-          >
-            <i className="fa-solid fa-gift"></i> Klaim Dadu Harian
-          </button>
+          {profile.last_daily_claim !==
+          new Date().toISOString().split('T')[0] ? (
+            <button
+              onClick={handleDailyClaim}
+              className="btn-neo btn-neo-secondary w-full"
+            >
+              <i className="fa-solid fa-gift"></i> Klaim Dadu Harian
+            </button>
+          ) : (
+            <div className="text-center py-3 bg-white/5 rounded-xl border border-dashed border-white/20 text-xs font-bold opacity-60 uppercase tracking-widest">
+              <i className="fa-solid fa-check-circle mr-2 text-secondary-yellow"></i>
+              Hadiah harian sudah diambil
+            </div>
+          )}
           {claimMsg && (
             <div className="text-center text-sm font-bold text-secondary-yellow mt-2 animate-bounce">
               {claimMsg}

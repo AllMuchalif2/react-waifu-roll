@@ -15,22 +15,22 @@ export default function Home() {
           <p className="text-text-muted mb-6 font-medium">
             Gacha waifu impianmu sekarang juga dan kumpulkan tier tertinggi.
           </p>
-          <Link to="/roll" className="btn-neo no-underline">
+          <Link to="/gacha" className="btn-neo no-underline">
             <i className="fa-solid fa-dice text-xl"></i> ROLL GACHA
           </Link>
         </div>
 
         {/* Info Pool */}
         <div className="card-neo bg-secondary-yellow border-text-dark">
-          <h2 className="text-xl mb-2">Lihat Koleksi Pool</h2>
+          <h2 className="text-xl mb-2">Lihat Koleksi Waifu</h2>
           <p className="text-sm mb-4 text-text-dark opacity-80 font-medium">
             Cek daftar waifu yang saat ini tersedia di dalam mesin gacha.
           </p>
           <Link
-            to="/pool"
+            to="/waifus"
             className="btn-neo btn-neo-secondary no-underline border-text-dark"
           >
-            <i className="fa-solid fa-list text-xl"></i> LIHAT POOL
+            <i className="fa-solid fa-list text-xl"></i> LIHAT WAIFU
           </Link>
         </div>
       </main>
