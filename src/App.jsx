@@ -4,6 +4,9 @@ import { AuthProvider } from './contexts/AuthContext';
 import Home from './pages/public/Home';
 import Pool from './pages/public/Pool';
 
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminWaifus from './pages/admin/AdminWaifus';
+
 // Placeholder Pages sementara (Nanti kita pisah ke folder src/pages/...)
 const Login = () => (
   <div className="p-4 text-center mt-10">
@@ -39,17 +42,6 @@ const History = () => (
 const Scoreboard = () => (
   <div className="p-4 text-center mt-10">
     <h1>Scoreboard</h1>
-  </div>
-);
-
-const AdminDashboard = () => (
-  <div className="p-4 text-center mt-10">
-    <h1>Admin Dashboard</h1>
-  </div>
-);
-const AdminWaifus = () => (
-  <div className="p-4 text-center mt-10">
-    <h1>Kelola Waifu</h1>
   </div>
 );
 
