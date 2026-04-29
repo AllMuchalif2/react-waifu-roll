@@ -4,6 +4,7 @@ import { AuthProvider } from './contexts/AuthContext';
 // Public Pages
 import Home from './pages/public/Home';
 import Waifus from './pages/public/Waifus';
+import Changelog from './pages/public/Changelog';
 
 // Auth Pages
 import Login from './pages/auth/Login';
@@ -30,6 +31,7 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/waifus" element={<Waifus />} />
           <Route path="/rank" element={<Rank />} />
+          <Route path="/changelog" element={<Changelog />} />
 
           {/* Auth Routes */}
           <Route path="/login" element={<Login />} />

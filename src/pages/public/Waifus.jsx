@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
 import BottomNav from '../../components/BottomNav';
 import WaifuCard from '../../components/WaifuCard';
@@ -19,7 +20,7 @@ export default function Waifus() {
     const { data, error } = await supabase
       .from('waifu_pool')
       .select('*, user_waifus(profiles(username))')
-      .order('id', { ascending: false });
+      .order('tier', { ascending: true });
 
     if (!error && data) {
       // Format data agar lebih mudah dibaca di komponen
@@ -45,7 +46,15 @@ export default function Waifus() {
       <main className="px-4 max-w-3xl mx-auto">
         {/* Panel Filter */}
         <div className="card-neo mb-6 p-4">
-          <h2 className="text-xl mb-4 text-center">Daftar Waifu Pool</h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl">Daftar Waifu Pool</h2>
+            <Link
+              to="/changelog"
+              className="text-[0.65rem] font-black uppercase text-primary-blue bg-primary-blue/10 px-2 py-1 rounded-md border border-primary-blue/20 no-underline"
+            >
+              <i className="fa-solid fa-clock-rotate-left mr-1"></i> Changelog
+            </Link>
+          </div>
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1">
               <i className="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-text-muted"></i>

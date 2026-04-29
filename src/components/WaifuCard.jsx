@@ -39,18 +39,14 @@ export default function WaifuCard({ waifu, isInventory = false, onSell }) {
         <div className="flex flex-col gap-1">
           {waifu.tier === 'LIMITED' && waifu.owner && (
             <div className="text-[0.65rem] bg-text-dark text-secondary-yellow py-1 px-2 rounded-lg font-black uppercase">
-              Milik: {waifu.owner}
+              <i className="fa-solid fa-crown mr-1"></i>
+              {waifu.owner}
             </div>
           )}
         </div>
       ) : (
         <>
           <div className="text-[0.75rem] font-bold opacity-60"></div>
-          {waifu.tier === 'LIMITED' && (
-            <div className="text-[0.75rem] font-black text-danger mt-[2px]">
-              UNIK 1/1
-            </div>
-          )}
           <button
             type="button"
             onClick={() => onSell && onSell(waifu)}

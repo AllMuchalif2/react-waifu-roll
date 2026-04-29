@@ -130,6 +130,15 @@ export default function AdminWaifus() {
     if (error) {
       setMessage('Gagal menyimpan: ' + error.message);
     } else {
+      // Log Changelog: ADD
+      await supabase.from('waifu_changelogs').insert([
+        {
+          action: 'ADD',
+          waifu_name: preview.name,
+          details: `Ditambahkan ke pool dengan Tier ${preview.tier}`,
+        },
+      ]);
+
       setMessage(`Berhasil! ${preview.name} ditambahkan ke Pool.`);
       setPreview(null);
       setJikanId('');
@@ -154,8 +163,24 @@ export default function AdminWaifus() {
       return;
     }
 
+    // Ambil info waifu sebelum dihapus untuk log
+    const { data: oldData } = await supabase
+      .from('waifu_pool')
+      .select('name')
+      .eq('id', id)
+      .single();
+
     const { error } = await supabase.from('waifu_pool').delete().eq('id', id);
     if (!error) {
+      // Log Changelog: DELETE
+      await supabase.from('waifu_changelogs').insert([
+        {
+          action: 'DELETE',
+          waifu_name: oldData?.name || 'Unknown',
+          details: `Dihapus dari pool oleh Admin`,
+        },
+      ]);
+
       fetchPool();
       setMessage('Waifu berhasil dihapus.');
     } else {
@@ -164,11 +189,28 @@ export default function AdminWaifus() {
   };
 
   const handleUpdateTier = async (id, newTier) => {
+    // Ambil info lama untuk log
+    const { data: oldData } = await supabase
+      .from('waifu_pool')
+      .select('name, tier')
+      .eq('id', id)
+      .single();
+
     const { error } = await supabase
       .from('waifu_pool')
       .update({ tier: newTier })
       .eq('id', id);
+
     if (!error) {
+      // Log Changelog: UPDATE
+      await supabase.from('waifu_changelogs').insert([
+        {
+          action: 'UPDATE',
+          waifu_name: oldData?.name || 'Unknown',
+          details: `Tier diubah dari ${oldData?.tier} ke ${newTier}`,
+        },
+      ]);
+
       setIsEditing(null);
       fetchPool();
       setMessage('Tier berhasil diupdate.');
