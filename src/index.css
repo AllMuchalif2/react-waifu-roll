@@ -1,117 +1,75 @@
 @import "tailwindcss";
 
-:root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+/* 1. Deklarasi Variabel Tema (Tailwind v4) */
+@theme {
+  --color-bg-light: #f8f9fa;
+  --color-card-bg: #ffffff;
+  --color-primary-blue: #3d5afe;
+  --color-secondary-yellow: #ffea00;
+  --color-text-dark: #1a1a1a;
+  --color-text-muted: #6c757d;
+  --color-danger: #ff1744;
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
-
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
+  --font-sans: "Lexend", sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
+/* 2. Global Styles & Utilities */
+@layer base {
+  body {
+    @apply bg-bg-light text-text-dark font-sans;
+    /* Pola background titik-titik khas MYBINI */
+    background-image: radial-gradient(#d1d1d1 1px, transparent 1px);
+    background-size: 20px 20px;
+    padding-bottom: 100px;
+    /* Ruang untuk bottom nav */
+    min-height: 100vh;
   }
 
-  #social .button-icon {
-    filter: invert(1) brightness(2);
+  h1,
+  h2,
+  h3 {
+    @apply font-extrabold leading-tight;
   }
-}
 
-body {
-  margin: 0;
-}
+  /* 3. Custom Components (Clean Code Approach)
+    Daripada menulis class Tailwind yang sangat panjang berulang kali di JSX,
+    kita buat komponen CSS utilitas untuk elemen yang paling sering dipakai.
+  */
 
-#root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-}
-
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
-}
-
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
+  .card-neo {
+    @apply bg-card-bg border-2 border-text-dark rounded-2xl p-6 relative;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   }
-}
 
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-
-  @media (max-width: 1024px) {
-    font-size: 20px;
+  .btn-neo {
+    @apply inline-flex items-center justify-center gap-2 w-full px-6 py-3 bg-primary-blue text-white border-2 border-text-dark rounded-xl font-semibold uppercase cursor-pointer transition-all duration-150;
+    box-shadow: 6px 6px 0px var(--color-secondary-yellow);
   }
-}
 
-p {
-  margin: 0;
-}
+  .btn-neo:active {
+    @apply translate-x-[3px] translate-y-[3px];
+    box-shadow: 3px 3px 0px var(--color-secondary-yellow);
+  }
 
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
-}
+  .btn-neo-secondary {
+    @apply bg-secondary-yellow text-text-dark;
+    box-shadow: 6px 6px 0px var(--color-primary-blue);
+  }
 
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
+  .btn-neo-secondary:active {
+    box-shadow: 3px 3px 0px var(--color-primary-blue);
+  }
+
+  .btn-neo-danger {
+    @apply bg-danger text-white;
+    box-shadow: 6px 6px 0px var(--color-text-dark);
+  }
+
+  .btn-neo-danger:active {
+    box-shadow: 3px 3px 0px var(--color-text-dark);
+  }
+
+  .btn-neo:disabled {
+    @apply opacity-60 cursor-not-allowed translate-x-0 translate-y-0 shadow-none;
+  }
 }
