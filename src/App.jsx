@@ -1,17 +1,10 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 
+import Home from './pages/public/Home';
+import Pool from './pages/public/Pool';
+
 // Placeholder Pages sementara (Nanti kita pisah ke folder src/pages/...)
-const Home = () => (
-  <div className="p-4 text-center mt-10">
-    <h1>Halaman Beranda</h1>
-  </div>
-);
-const Pool = () => (
-  <div className="p-4 text-center mt-10">
-    <h1>Waifu Pool</h1>
-  </div>
-);
 const Login = () => (
   <div className="p-4 text-center mt-10">
     <h1>Login</h1>
