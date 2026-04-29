@@ -18,11 +18,16 @@ export default function Waifus() {
     setLoading(true);
     const { data, error } = await supabase
       .from('waifu_pool')
-      .select('*')
+      .select('*, user_waifus(profiles(username))')
       .order('id', { ascending: false });
 
     if (!error && data) {
-      setWaifus(data);
+      // Format data agar lebih mudah dibaca di komponen
+      const formatted = data.map((w) => ({
+        ...w,
+        owner: w.user_waifus?.[0]?.profiles?.username || null,
+      }));
+      setWaifus(formatted);
     }
     setLoading(false);
   };

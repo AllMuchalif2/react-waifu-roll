@@ -30,20 +30,22 @@ export default function WaifuCard({ waifu, isInventory = false, onSell }) {
         className="w-full rounded-lg border border-text-dark aspect-square object-cover mb-2"
       />
 
-      <div className="text-xs font-black leading-[1.2] mb-[2px] line-clamp-2 h-[1.8rem]">
+      <div className="text-xs font-black leading-[1.2] line-clamp-2">
         {waifu.name}
       </div>
 
       {/* Footer Card menyesuaikan konteks (Inventory vs Pool biasa) */}
       {!isInventory ? (
-        <div className="text-[0.75rem] text-text-muted mt-1">
-          ID: {waifu.jikan_id}
+        <div className="flex flex-col gap-1">
+          {waifu.tier === 'LIMITED' && waifu.owner && (
+            <div className="text-[0.65rem] bg-text-dark text-secondary-yellow py-1 px-2 rounded-lg font-black uppercase">
+              Milik: {waifu.owner}
+            </div>
+          )}
         </div>
       ) : (
         <>
-          <div className="text-[0.75rem] font-bold opacity-60">
-            [{waifu.tier}]
-          </div>
+          <div className="text-[0.75rem] font-bold opacity-60"></div>
           {waifu.tier === 'LIMITED' && (
             <div className="text-[0.75rem] font-black text-danger mt-[2px]">
               UNIK 1/1

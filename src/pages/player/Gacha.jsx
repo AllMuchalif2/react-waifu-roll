@@ -6,19 +6,7 @@ import Navbar from '../../components/Navbar';
 import BottomNav from '../../components/BottomNav';
 import WaifuCard from '../../components/WaifuCard';
 import { animate as anime } from 'animejs';
-
-// Konfigurasi Drop Rate (%)
-const DROP_RATES = [
-  { tier: 'LIMITED', chance: 0.01 },
-  { tier: 'UR', chance: 0.19 },
-  { tier: 'SSR', chance: 0.8 },
-  { tier: 'SR', chance: 2.0 },
-  { tier: 'S', chance: 4.0 },
-  { tier: 'R', chance: 8.0 },
-  { tier: 'A', chance: 15.0 },
-  { tier: 'B', chance: 30.0 },
-  { tier: 'C', chance: 40.0 },
-];
+import { DROP_RATES, PRICE_MAP } from '../../config/gachaConfig';
 
 export default function Gacha() {
   const { user, profile, fetchProfile, loading: authLoading } = useAuth();
@@ -26,6 +14,7 @@ export default function Gacha() {
   const [isRolling, setIsRolling] = useState(false);
   const [result, setResult] = useState(null);
   const [msg, setMsg] = useState('');
+  const [showRates, setShowRates] = useState(false);
 
   // Proteksi Halaman
   useEffect(() => {
@@ -65,16 +54,43 @@ export default function Gacha() {
       fetchProfile(user.id);
 
       // 2. Tentukan Tier Waifu (RNG)
-      const tier = getRandomTier();
+      let selectedTier = getRandomTier();
 
-      // 3. Ambil 1 waifu acak dari pool sesuai Tier tersebut
-      const { data: poolItems } = await supabase
+      // 3. Ambil waifu sesuai tier (Include check kepemilikan untuk LIMITED)
+      let { data: poolItems } = await supabase
         .from('waifu_pool')
-        .select('*')
-        .eq('tier', tier);
+        .select('*, user_waifus(id)')
+        .eq('tier', selectedTier);
 
+      // Filter: Jika LIMITED, buang yang sudah ada pemiliknya (1/1 Rule)
+      if (selectedTier === 'LIMITED') {
+        poolItems = poolItems.filter((item) => item.user_waifus.length === 0);
+      }
+
+      // SMART FALLBACK: Jika tier terpilih kosong (atau semua LIMITED sudah dimiliki)
       if (!poolItems || poolItems.length === 0) {
-        throw new Error(`Maaf, Pool untuk Tier ${tier} sedang kosong.`);
+        const { data: allAvailable } = await supabase
+          .from('waifu_pool')
+          .select('*, user_waifus(id)');
+
+        if (!allAvailable || allAvailable.length === 0) {
+          throw new Error(
+            'Maaf, mesin gacha sedang kosong! Admin belum menambahkan waifu apapun.',
+          );
+        }
+
+        // Filter out owned LIMITED dari seluruh pool
+        poolItems = allAvailable.filter((item) => {
+          if (item.tier === 'LIMITED' && item.user_waifus.length > 0)
+            return false;
+          return true;
+        });
+
+        if (poolItems.length === 0) {
+          throw new Error(
+            'Wah! Semua waifu LIMITED sudah habis dimiliki pemain lain. Pool saat ini kosong.',
+          );
+        }
       }
 
       const randomWaifu =
@@ -139,10 +155,53 @@ export default function Gacha() {
     <>
       <Navbar />
       <main className="px-4 max-w-md mx-auto text-center pb-24">
-        {/* Info Sisa Dadu */}
-        <div className="inline-flex items-center gap-2 bg-text-dark text-white px-4 py-2 rounded-xl font-bold mb-8 border-2 border-primary-blue shadow-[4px_4px_0px_#ffea00]">
-          <i className="fa-solid fa-dice"></i> Dadu: {profile.dice_count}
+        <div className="flex justify-center gap-2 mb-8">
+          <div className="inline-flex items-center gap-2 bg-text-dark text-white px-4 py-2 rounded-xl font-bold border-2 border-primary-blue shadow-[4px_4px_0px_#ffea00]">
+            <i className="fa-solid fa-dice"></i> Dadu: {profile.dice_count}
+          </div>
+          <button
+            onClick={() => setShowRates(!showRates)}
+            className="w-10 h-10 bg-white border-2 border-text-dark rounded-xl flex items-center justify-center shadow-[4px_4px_0px_#1a1a1a] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all"
+            title="Info Rate"
+          >
+            <i className="fa-solid fa-circle-info text-primary-blue"></i>
+          </button>
         </div>
+
+        {/* Modal/Overlay Rate Info */}
+        {showRates && (
+          <div className="card-neo mb-6 bg-white text-left animate-fade-in relative">
+            <button
+              onClick={() => setShowRates(false)}
+              className="absolute top-2 right-2 text-text-muted hover:text-danger"
+            >
+              <i className="fa-solid fa-xmark text-xl"></i>
+            </button>
+            <h3 className="text-sm font-black mb-3 border-b-2 border-text-dark pb-1 uppercase italic">
+              Gacha Rates & Prices
+            </h3>
+            <div className="flex flex-col gap-1">
+              {DROP_RATES.map((r) => (
+                <div key={r.tier} className="flex justify-between text-[0.7rem]">
+                  <span className="font-bold">
+                    {r.label || r.tier} ({r.tier})
+                  </span>
+                  <div className="flex gap-3">
+                    <span className="text-primary-blue font-black">
+                      {r.chance}%
+                    </span>
+                    <span className="text-secondary-yellow bg-text-dark px-1 rounded font-bold">
+                      {PRICE_MAP[r.tier]} Koin
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <p className="text-[0.6rem] mt-3 opacity-50 italic">
+              * Harga di atas adalah harga jual waifu ke sistem.
+            </p>
+          </div>
+        )}
 
         {msg && (
           <div className="mb-4 text-danger font-bold animate-pulse">{msg}</div>

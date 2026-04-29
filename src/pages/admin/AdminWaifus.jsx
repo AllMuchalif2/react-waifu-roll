@@ -74,7 +74,7 @@ export default function AdminWaifus() {
     setSearchResults([]);
     try {
       const res = await fetch(
-        `https://api.jikan.moe/v4/characters?q=${searchName}&limit=5`,
+        `https://api.jikan.moe/v4/characters?q=${searchName}&limit=15&order_by=favorites&sort=desc`,
       );
       const { data } = await res.json();
 
@@ -140,6 +140,20 @@ export default function AdminWaifus() {
 
   const handleDelete = async (id) => {
     if (!confirm('Hapus waifu ini dari pool?')) return;
+
+    // Cek apakah waifu ini sudah dimiliki pemain (Data Integrity)
+    const { count, error: checkError } = await supabase
+      .from('user_waifus')
+      .select('*', { count: 'exact', head: true })
+      .eq('waifu_id', id);
+
+    if (count > 0) {
+      setMessage(
+        'Gagal: Waifu ini sudah dimiliki oleh pemain! Hapus dulu data kepemilikan jika ingin menghapus dari pool.',
+      );
+      return;
+    }
+
     const { error } = await supabase.from('waifu_pool').delete().eq('id', id);
     if (!error) {
       fetchPool();
