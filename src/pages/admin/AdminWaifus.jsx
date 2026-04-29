@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
-import Navbar from '../../components/Navbar';
+import AdminNavbar from '../../components/AdminNavbar';
 import WaifuCard from '../../components/WaifuCard';
 import { Link } from 'react-router-dom';
 
@@ -225,15 +225,9 @@ export default function AdminWaifus() {
   }, [tier]);
 
   return (
-    <>
-      <Navbar />
+    <div className="min-h-screen bg-bg-light">
+      <AdminNavbar />
       <main className="px-4 max-w-md mx-auto flex flex-col gap-6 pb-20 mt-4">
-        <Link
-          to="/admin"
-          className="text-text-muted font-bold no-underline hover:text-primary-blue flex items-center gap-2"
-        >
-          <i className="fa-solid fa-arrow-left"></i> Kembali ke Dasbor
-        </Link>
 
         <div className="card-neo">
           <h1 className="text-xl mb-4 text-center font-black uppercase">
@@ -464,6 +458,6 @@ export default function AdminWaifus() {
           </div>
         </div>
       </main>
-    </>
+    </div>
   );
 }

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
-import Navbar from '../../components/Navbar';
+import AdminNavbar from '../../components/AdminNavbar';
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({
@@ -41,9 +41,9 @@ export default function AdminDashboard() {
   };
 
   return (
-    <>
-      <Navbar />
-      <main className="px-4 max-w-lg mx-auto pb-24 mt-4">
+    <div className="min-h-screen bg-bg-light">
+      <AdminNavbar />
+      <main className="px-4 max-w-lg mx-auto pb-24">
         {/* Header Section */}
         <div className="card-neo mb-6 border-danger shadow-[6px_6px_0px_#ff1744]">
           <div className="flex items-center gap-4">
@@ -106,24 +106,15 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Quick Links */}
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3 mt-8">
           <Link
-            to="/admin/waifus"
-            className="btn-neo btn-neo-danger no-underline flex items-center justify-center gap-3 py-4"
+            to="/dashboard"
+            className="text-center text-sm font-bold text-text-muted no-underline hover:text-primary-blue transition-colors"
           >
-            <i className="fa-solid fa-database text-xl"></i>
-            <span>KELOLA DATABASE WAIFU</span>
-          </Link>
-
-          <Link
-            to="/"
-            className="text-center text-sm font-bold text-text-muted no-underline hover:text-primary-blue transition-colors mt-2"
-          >
-            &larr; Kembali ke Beranda
+            &larr; Ke Dashboard Player
           </Link>
         </div>
       </main>
-    </>
+    </div>
   );
 }

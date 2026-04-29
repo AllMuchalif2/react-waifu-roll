@@ -15,11 +15,13 @@ import PlayerDashboard from './pages/player/PlayerDashboard';
 import Gacha from './pages/player/Gacha';
 import History from './pages/player/History';
 import Rank from './pages/player/Rank';
+import Suggestions from './pages/player/Suggestions';
 
 // Admin Pages
 import AdminLogin from './pages/auth/AdminLogin';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminWaifus from './pages/admin/AdminWaifus';
+import AdminSuggestions from './pages/admin/AdminSuggestions';
 import AdminRoute from './components/AdminRoute';
 
 export default function App() {
@@ -42,6 +44,7 @@ export default function App() {
           <Route path="/dashboard" element={<PlayerDashboard />} />
           <Route path="/gacha" element={<Gacha />} />
           <Route path="/history" element={<History />} />
+          <Route path="/suggestions" element={<Suggestions />} />
 
           {/* Admin Routes (Proteksi Level Route) */}
           <Route
@@ -57,6 +60,14 @@ export default function App() {
             element={
               <AdminRoute>
                 <AdminWaifus />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/suggestions"
+            element={
+              <AdminRoute>
+                <AdminSuggestions />
               </AdminRoute>
             }
           />
