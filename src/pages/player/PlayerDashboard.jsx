@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import Navbar from '../../components/Navbar';
@@ -25,6 +25,17 @@ export default function PlayerDashboard() {
   const [inventory, setInventory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [claimMsg, setClaimMsg] = useState('');
+  const [search, setSearch] = useState('');
+  const [tierFilter, setTierFilter] = useState('');
+  const [sellingWaifu, setSellingWaifu] = useState(null);
+  const [sellAmount, setSellAmount] = useState(1);
+
+  // Filter Inventory di sisi Client
+  const filteredInventory = inventory.filter((item) => {
+    const matchName = item.name.toLowerCase().includes(search.toLowerCase());
+    const matchTier = tierFilter ? item.tier === tierFilter : true;
+    return matchName && matchTier;
+  });
 
   // Proteksi Halaman (Redirect jika belum login)
   useEffect(() => {
@@ -79,28 +90,35 @@ export default function PlayerDashboard() {
     setTimeout(() => setClaimMsg(''), 3000);
   };
 
-  // Fitur Jual Waifu
-  const handleSell = async (waifu) => {
-    if (
-      !confirm(
-        `Jual ${waifu.name} seharga ${PRICE_MAP[waifu.tier] || 10} Koin?`,
-      )
-    )
-      return;
+  // Tahap 1: Buka Modal Konfirmasi Jual
+  const handleSell = (waifu) => {
+    setSellingWaifu(waifu);
+    setSellAmount(1); // Reset jumlah jual ke 1
+  };
 
-    const idToSell = waifu.instanceIds[0]; // Ambil 1 ID untuk dihapus
-    const price = PRICE_MAP[waifu.tier] || 10;
+  // Tahap 2: Eksekusi Jual (Setelah Klik di Modal)
+  const confirmSell = async () => {
+    if (!sellingWaifu || sellAmount < 1) return;
 
-    // Hapus waifu dari inventory
-    await supabase.from('user_waifus').delete().eq('id', idToSell);
-    // Tambah koin pemain
+    // Pastikan tidak menjual lebih dari yang dimiliki
+    const finalAmount = Math.min(sellAmount, sellingWaifu.total);
+    const idsToSell = sellingWaifu.instanceIds.slice(0, finalAmount);
+    const pricePerUnit = PRICE_MAP[sellingWaifu.tier] || 10;
+    const totalPrice = pricePerUnit * finalAmount;
+
+    setLoading(true);
+    // Hapus beberapa waifu sekaligus dari inventory
+    await supabase.from('user_waifus').delete().in('id', idsToSell);
+    // Tambah koin pemain (total)
     await supabase
       .from('profiles')
-      .update({ coins: profile.coins + price })
+      .update({ coins: profile.coins + totalPrice })
       .eq('id', user.id);
 
-    fetchProfile(user.id);
-    fetchInventory();
+    await fetchProfile(user.id);
+    await fetchInventory();
+    setSellingWaifu(null); // Tutup Modal
+    setLoading(false);
   };
 
   const handleLogout = async () => {
@@ -154,20 +172,23 @@ export default function PlayerDashboard() {
             </div>
           </div>
 
-          {profile.last_daily_claim !==
-          new Date().toISOString().split('T')[0] ? (
-            <button
-              onClick={handleDailyClaim}
-              className="btn-neo btn-neo-secondary w-full"
-            >
-              <i className="fa-solid fa-gift"></i> Klaim Dadu Harian
-            </button>
-          ) : (
-            <div className="text-center py-3 bg-white/5 rounded-xl border border-dashed border-white/20 text-xs font-bold opacity-60 uppercase tracking-widest">
-              <i className="fa-solid fa-check-circle mr-2 text-secondary-yellow"></i>
-              Hadiah harian sudah diambil
-            </div>
-          )}
+          <div className="flex flex-col gap-2">
+            {profile.last_daily_claim !==
+            new Date().toISOString().split('T')[0] ? (
+              <button
+                onClick={handleDailyClaim}
+                className="btn-neo btn-neo-secondary w-full"
+              >
+                <i className="fa-solid fa-gift"></i> Klaim Dadu Harian
+              </button>
+            ) : (
+              <div className="text-center py-3 bg-white/5 rounded-xl border border-dashed border-white/20 text-xs font-bold opacity-60 uppercase tracking-widest">
+                <i className="fa-solid fa-check-circle mr-2 text-secondary-yellow"></i>
+                Hadiah harian sudah diambil
+              </div>
+            )}
+          </div>
+
           {claimMsg && (
             <div className="text-center text-sm font-bold text-secondary-yellow mt-2 animate-bounce">
               {claimMsg}
@@ -175,16 +196,65 @@ export default function PlayerDashboard() {
           )}
         </div>
 
+        {/* Akses Cepat Luar Card */}
+        <div className="flex gap-3 mb-8">
+          <Link to="/history" className="btn-neo flex-1 no-underline text-xs">
+            <i className="fa-solid fa-clock-rotate-left"></i> Riwayat
+          </Link>
+
+          {profile.role === 'admin' && (
+            <Link
+              to="/admin"
+              className="btn-neo btn-neo-danger flex-1 no-underline text-xs"
+            >
+              <i className="fa-solid fa-user-gear"></i> Admin
+            </Link>
+          )}
+        </div>
+
+        {/* Filter & Search Inventory */}
+        <div className="flex flex-col gap-3 mb-6">
+          <div className="relative">
+            <i className="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-text-muted"></i>
+            <input
+              type="text"
+              placeholder="Cari koleksi waifu..."
+              className="w-full pl-10 pr-4 py-3 border-2 border-text-dark rounded-xl outline-none focus:border-primary-blue transition-colors font-sans font-medium"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+          <select
+            className="p-3 border-2 border-text-dark rounded-xl outline-none font-sans font-bold bg-white cursor-pointer"
+            value={tierFilter}
+            onChange={(e) => setTierFilter(e.target.value)}
+          >
+            <option value="">Semua Tier</option>
+            <option value="C">Tier C</option>
+            <option value="B">Tier B</option>
+            <option value="A">Tier A</option>
+            <option value="R">Tier R</option>
+            <option value="S">Tier S</option>
+            <option value="SR">Tier SR</option>
+            <option value="SSR">Tier SSR</option>
+            <option value="UR">Tier UR</option>
+            <option value="LIMITED">LIMITED</option>
+          </select>
+        </div>
+
         {/* Inventory Waifu */}
-        <h3 className="text-xl mb-4 text-center border-b-2 border-text-dark pb-2 inline-block mx-auto block w-max">
-          Koleksi Waifu ({inventory.reduce((acc, curr) => acc + curr.total, 0)})
+        <h3 className="text-xl mb-4 text-center border-b-2 border-text-dark pb-2 inline-block mx-auto block w-max uppercase italic font-black">
+          Koleksi Waifu (
+          {filteredInventory.reduce((acc, curr) => acc + curr.total, 0)})
         </h3>
 
         {loading ? (
-          <div className="text-center font-bold">Memuat koleksi...</div>
+          <div className="text-center font-bold animate-pulse py-10">
+            Memuat koleksi...
+          </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {inventory.map((waifu) => (
+            {filteredInventory.map((waifu) => (
               <WaifuCard
                 key={waifu.id}
                 waifu={waifu}
@@ -192,14 +262,93 @@ export default function PlayerDashboard() {
                 onSell={handleSell}
               />
             ))}
-            {inventory.length === 0 && (
-              <div className="col-span-full text-center text-text-muted mt-4 font-semibold">
-                Koleksi masih kosong. Ayo gacha sekarang!
+            {filteredInventory.length === 0 && (
+              <div className="col-span-full text-center text-text-muted mt-4 font-semibold italic opacity-50">
+                Tidak ada waifu yang cocok dengan filter.
               </div>
             )}
           </div>
         )}
       </main>
+
+      {/* MODAL JUAL WAIFU (Premium UI) */}
+      {sellingWaifu && (
+        <div className="fixed inset-0 bg-text-dark/80 backdrop-blur-sm z-[100] flex items-center justify-center p-6 animate-fade-in">
+          <div className="card-neo w-full max-w-sm bg-white animate-zoom-in">
+            <div className="flex flex-col items-center text-center">
+              <div className="w-20 h-20 bg-danger/10 rounded-full flex items-center justify-center mb-4 border-2 border-danger text-danger">
+                <i className="fa-solid fa-hand-holding-dollar text-4xl"></i>
+              </div>
+              <h2 className="text-xl font-black mb-1">Jual Waifu?</h2>
+              <p className="text-xs text-text-muted mb-4">
+                Pilih jumlah <b>{sellingWaifu.name}</b> yang ingin dijual:
+              </p>
+
+              {/* Input Jumlah Jual */}
+              <div className="w-full bg-gray-50 p-4 rounded-2xl border-2 border-text-dark mb-6">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-[0.65rem] font-black uppercase opacity-50">
+                    Jumlah (Maks: {sellingWaifu.total})
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setSellAmount(Math.max(1, sellAmount - 1))}
+                      className="w-8 h-8 rounded-lg border-2 border-text-dark flex items-center justify-center font-black hover:bg-primary-blue hover:text-white"
+                    >
+                      -
+                    </button>
+                    <input
+                      type="number"
+                      value={sellAmount}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value) || 1;
+                        setSellAmount(Math.min(val, sellingWaifu.total));
+                      }}
+                      className="w-12 text-center font-black bg-transparent outline-none text-lg"
+                    />
+                    <button
+                      onClick={() =>
+                        setSellAmount(
+                          Math.min(sellingWaifu.total, sellAmount + 1),
+                        )
+                      }
+                      className="w-8 h-8 rounded-lg border-2 border-text-dark flex items-center justify-center font-black hover:bg-primary-blue hover:text-white"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex justify-between items-center pt-3 border-t-2 border-text-dark/5">
+                  <span className="text-[0.65rem] font-black uppercase opacity-50">
+                    Total Koin
+                  </span>
+                  <span className="text-secondary-yellow font-black text-xl drop-shadow-sm flex items-center gap-1">
+                    <i className="fa-solid fa-coins"></i>{' '}
+                    {(PRICE_MAP[sellingWaifu.tier] || 10) * sellAmount}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex gap-3 w-full">
+                <button
+                  onClick={() => setSellingWaifu(null)}
+                  className="flex-1 py-3 border-2 border-text-dark rounded-xl font-bold uppercase text-xs"
+                >
+                  Batal
+                </button>
+                <button
+                  onClick={confirmSell}
+                  className="flex-1 btn-neo btn-neo-danger py-3 text-xs"
+                >
+                  JUAL {sellAmount} UNIT
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <BottomNav />
     </>
   );
