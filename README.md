@@ -1,16 +1,40 @@
-# React + Vite
+# 🌟 MYBINI - Neo-Brutalist Waifu Gacha
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+MYBINI adalah platform koleksi Waifu berbasis web dengan desain **Neo-Brutalist Pop** yang mencolok. Kumpulkan karakter favoritmu, kelola koin, dan bersainglah dengan pemain lain!
 
-Currently, two official plugins are available:
+## 🚀 Fitur Utama
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Gacha System**: Mekanisme gacha transparan dengan tier (C, B, A, S, SSR, UR, LIMITED).
+- **Admin Suite**: Dashboard moderasi saran waifu otomatis, manajemen pool, dan statistik pemain.
+- **Neo-Brutalist Design**: UI premium dengan bayangan tegas, warna kontras, dan animasi halus menggunakan **Anime.js v4**.
+- **User Dashboard**: Pantau koleksi, sisa koin, dan jumlah dadu dalam satu tampilan modern.
+- **Account Recovery**: Fitur lupa password dan pembaruan keamanan mandiri.
 
-## React Compiler
+## 🛠️ Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Frontend**: React 19 + Vite 8
+- **Backend/Database**: Supabase (Auth, Postgres, RLS)
+- **Styling**: Vanilla CSS (Neo-Brutalist implementation) + TailwindCSS
+- **Animation**: Anime.js v4 (Beta)
+- **Icons**: Font Awesome 6
 
-## Expanding the ESLint configuration
+## 📦 Instalasi Lokal
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+1. Clone repositori ini.
+2. Install dependensi:
+   ```bash
+   npm install
+   ```
+3. Buat file `.env` di root project dan tambahkan kredensial Supabase Anda:
+   ```env
+   VITE_SUPABASE_URL=your_supabase_url
+   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+   ```
+4. Jalankan aplikasi:
+   ```bash
+   npm run dev
+   ```
+
+---
+
+Dibuat dengan ❤️ oleh **@AllMuchalif2**
