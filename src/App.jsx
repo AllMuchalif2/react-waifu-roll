@@ -1,34 +1,28 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 
+// Public Pages
 import Home from './pages/public/Home';
 import Pool from './pages/public/Pool';
 
+// Auth Pages
+import Login from './pages/auth/Login';
+import Register from './pages/auth/Register';
+
+// Player Pages
+import PlayerDashboard from './pages/player/PlayerDashboard';
+
+// Admin Pages
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminWaifus from './pages/admin/AdminWaifus';
 
 // Placeholder Pages sementara (Nanti kita pisah ke folder src/pages/...)
-const Login = () => (
-  <div className="p-4 text-center mt-10">
-    <h1>Login</h1>
-  </div>
-);
-const Register = () => (
-  <div className="p-4 text-center mt-10">
-    <h1>Register</h1>
-  </div>
-);
 const AdminLogin = () => (
   <div className="p-4 text-center mt-10">
     <h1>Admin Login</h1>
   </div>
 );
 
-const PlayerDashboard = () => (
-  <div className="p-4 text-center mt-10">
-    <h1>Player Dashboard</h1>
-  </div>
-);
 const RollGacha = () => (
   <div className="p-4 text-center mt-10">
     <h1>Roll Gacha</h1>
