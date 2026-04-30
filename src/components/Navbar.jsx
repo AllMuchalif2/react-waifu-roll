@@ -16,12 +16,14 @@ export default function Navbar() {
 
       <button
         onClick={toggleTheme}
-        className="absolute right-4 top-8 w-10 h-10 flex items-center justify-center border-2 border-border-main rounded-xl bg-card-bg shadow-[2px_2px_0px_var(--border)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all"
+        className="absolute right-4 top-8 w-10 h-10 flex items-center justify-center border-2 border-border-main rounded-xl bg-card-bg shadow-[2px_2px_0px_var(--border)] active:translate-x-px active:translate-y-px active:shadow-none transition-all"
         aria-label="Toggle Theme"
       >
         <i
           className={`fa-solid ${
-            theme === 'light' ? 'fa-moon text-primary-blue' : 'fa-sun text-secondary-yellow'
+            theme === 'light'
+              ? 'fa-moon text-primary-blue'
+              : 'fa-sun text-secondary-yellow'
           }`}
         ></i>
       </button>

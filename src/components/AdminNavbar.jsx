@@ -20,13 +20,15 @@ export default function AdminNavbar() {
     }`;
 
   return (
-    <nav className="bg-card-bg border-b-4 border-border-main sticky top-0 z-[100] px-4 py-3 mb-6 transition-colors duration-300">
+    <nav className="bg-card-bg border-b-4 border-border-main sticky top-0 z-100 px-4 py-3 mb-6 transition-colors duration-300">
       <div className="max-w-5xl mx-auto flex justify-between items-center">
         <div className="flex items-center gap-4">
           <Link to="/admin" className="no-underline">
-            <span className="font-black italic text-lg text-danger">ADMIN.</span>
+            <span className="font-black italic text-lg text-danger">
+              ADMIN.
+            </span>
           </Link>
-          
+
           <div className="hidden sm:flex gap-2">
             <Link to="/admin" className={navClass('/admin')}>
               Stats
@@ -34,7 +36,10 @@ export default function AdminNavbar() {
             <Link to="/admin/waifus" className={navClass('/admin/waifus')}>
               Waifus
             </Link>
-            <Link to="/admin/suggestions" className={navClass('/admin/suggestions')}>
+            <Link
+              to="/admin/suggestions"
+              className={navClass('/admin/suggestions')}
+            >
               Saran
             </Link>
           </div>
@@ -43,19 +48,24 @@ export default function AdminNavbar() {
         <div className="flex items-center gap-4">
           <button
             onClick={toggleTheme}
-            className="w-8 h-8 flex items-center justify-center border-2 border-border-main rounded-lg bg-card-bg shadow-[2px_2px_0px_var(--border)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all"
+            className="w-8 h-8 flex items-center justify-center border-2 border-border-main rounded-lg bg-card-bg shadow-[2px_2px_0px_var(--border)] active:translate-x-px active:translate-y-px active:shadow-none transition-all"
           >
-            <i className={`fa-solid ${theme === 'light' ? 'fa-moon text-primary-blue' : 'fa-sun text-secondary-yellow'}`}></i>
+            <i
+              className={`fa-solid ${theme === 'light' ? 'fa-moon text-primary-blue' : 'fa-sun text-secondary-yellow'}`}
+            ></i>
           </button>
 
           <div className="h-6 w-[2px] bg-border-main opacity-20"></div>
 
-          <Link to="/dashboard" className="text-[0.65rem] font-bold text-primary-blue no-underline border-b border-primary-blue">
+          <Link
+            to="/dashboard"
+            className="text-[0.65rem] font-bold text-primary-blue no-underline border-b border-primary-blue"
+          >
             Ke Player
           </Link>
           <button
             onClick={handleLogout}
-            className="ml-2 bg-danger/10 text-danger border-2 border-danger px-3 py-1 rounded-lg text-[0.65rem] font-black uppercase hover:bg-danger hover:text-white transition-all shadow-[2px_2px_0px_var(--border)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
+            className="ml-2 bg-danger/10 text-danger border-2 border-danger px-3 py-1 rounded-lg text-[0.65rem] font-black uppercase hover:bg-danger hover:text-white transition-all shadow-[2px_2px_0px_var(--border)] active:translate-x-px active:translate-y-px active:shadow-none"
           >
             LOGOUT
           </button>
@@ -69,7 +79,10 @@ export default function AdminNavbar() {
         <Link to="/admin/waifus" className={navClass('/admin/waifus')}>
           Waifus
         </Link>
-        <Link to="/admin/suggestions" className={navClass('/admin/suggestions')}>
+        <Link
+          to="/admin/suggestions"
+          className={navClass('/admin/suggestions')}
+        >
           Saran
         </Link>
       </div>

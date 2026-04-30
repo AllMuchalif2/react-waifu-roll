@@ -42,7 +42,7 @@ export default function Home() {
         <section className="stagger-item flex flex-col items-center text-center pt-6">
           <div className="relative mb-8 floating">
             <div className="absolute -inset-4 bg-primary-blue rounded-full blur-2xl opacity-20 animate-pulse"></div>
-            <div className="w-32 h-32 bg-white rounded-[2rem] border-4 border-text-dark flex items-center justify-center p-4 shadow-[8px_8px_0px_#1a1a1a] relative z-10">
+            <div className="w-32 h-32 bg-white rounded-4xl border-4 border-text-dark flex items-center justify-center p-4 shadow-[8px_8px_0px_#1a1a1a] relative z-10">
               <img
                 src="/assets/img/logo.png"
                 alt="MYBINI Logo"

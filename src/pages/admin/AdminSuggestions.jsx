@@ -1,71 +1,46 @@
-import { useState, useEffect } from 'react';
-import { supabase } from '../../lib/supabase';
+import { useState } from 'react';
+import { useAdminSuggestions } from '../../hooks/useAdminSuggestions';
 import AdminNavbar from '../../components/AdminNavbar';
+import SuggestionCard from '../../components/admin/SuggestionCard';
+import ConfirmModal from '../../components/ConfirmModal';
 
 export default function AdminSuggestions() {
-  const [suggestions, setSuggestions] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState('pending');
+  const { suggestions, loading, filter, setFilter, handleUpdateStatus } =
+    useAdminSuggestions();
 
-  useEffect(() => {
-    fetchSuggestions();
-  }, [filter]);
+  const [alertConfig, setAlertConfig] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    type: 'primary',
+  });
+  const [confirmConfig, setConfirmConfig] = useState({
+    isOpen: false,
+    suggestion: null,
+    newStatus: '',
+  });
 
-  const fetchSuggestions = async () => {
-    setLoading(true);
-    let query = supabase
-      .from('waifu_suggestions')
-      .select('*, profiles(username)')
-      .order('created_at', { ascending: false });
-
-    if (filter !== 'all') {
-      query = query.eq('status', filter);
-    }
-
-    const { data } = await query;
-    if (data) setSuggestions(data);
-    setLoading(false);
+  const onUpdateStatusClick = (suggestion, newStatus) => {
+    setConfirmConfig({
+      isOpen: true,
+      suggestion,
+      newStatus,
+    });
   };
 
-  const handleUpdateStatus = async (suggestion, newStatus) => {
-    setLoading(true);
+  const executeUpdate = async () => {
+    const { suggestion, newStatus } = confirmConfig;
+    setConfirmConfig({ ...confirmConfig, isOpen: false });
 
-    if (newStatus === 'approved') {
-      const { error: poolError } = await supabase.from('waifu_pool').insert([
-        {
-          jikan_id: suggestion.jikan_id,
-          name: suggestion.waifu_name,
-          image_url: suggestion.image_url,
-          tier: suggestion.suggested_tier,
-        },
-      ]);
-
-      if (poolError) {
-        alert('Gagal memasukkan ke pool: ' + poolError.message);
-        setLoading(false);
-        return;
-      }
-
-      await supabase.from('waifu_changelogs').insert([
-        {
-          action: 'ADD',
-          waifu_name: suggestion.waifu_name,
-          details: `Ditambahkan dari saran pemain (Tier: ${suggestion.suggested_tier})`,
-        },
-      ]);
+    const result = await handleUpdateStatus(suggestion, newStatus);
+    if (result?.error) {
+      setAlertConfig({
+        isOpen: true,
+        title: 'Error',
+        message: result.error,
+        type: 'danger',
+      });
     }
-
-    const { error } = await supabase
-      .from('waifu_suggestions')
-      .update({ status: newStatus })
-      .eq('id', suggestion.id);
-
-    if (error) {
-      alert('Gagal mengupdate status: ' + error.message);
-    } else {
-      fetchSuggestions();
-    }
-    setLoading(false);
   };
 
   return (
@@ -86,7 +61,7 @@ export default function AdminSuggestions() {
             <button
               key={s}
               onClick={() => setFilter(s)}
-              className={`px-4 py-2 rounded-xl border-2 border-border-main font-black text-[0.65rem] uppercase transition-all shadow-[3px_3px_0px_var(--border)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none ${
+              className={`px-4 py-2 rounded-xl border-2 border-border-main font-black text-[0.65rem] uppercase transition-all shadow-[3px_3px_0px_var(--border)] active:translate-x-px active:translate-y-px active:shadow-none ${
                 filter === s
                   ? 'bg-secondary-yellow text-[#1a1a1a]'
                   : 'bg-card-bg text-text-muted'
@@ -104,59 +79,11 @@ export default function AdminSuggestions() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {suggestions.map((s) => (
-              <div
+              <SuggestionCard
                 key={s.id}
-                className="card-neo bg-card-bg flex gap-4 animate-fade-in border-border-main"
-              >
-                <img
-                  src={s.image_url}
-                  className="w-24 h-24 rounded-xl border-2 border-border-main object-cover shadow-[4px_4px_0px_var(--border)]"
-                  alt=""
-                />
-                <div className="flex-1 flex flex-col justify-between">
-                  <div>
-                    <div className="flex justify-between items-start">
-                      <h3 className="text-sm font-black leading-tight text-text-main">
-                        {s.waifu_name}
-                      </h3>
-                      <span className="text-[0.6rem] bg-bg-main px-2 py-1 rounded font-bold border border-border-main/10 text-text-main">
-                        {s.suggested_tier}
-                      </span>
-                    </div>
-                    <p className="text-[0.65rem] text-text-muted mt-1 italic">
-                      Disarankan oleh: <b className="text-text-main">{s.profiles?.username || 'User'}</b>
-                    </p>
-                  </div>
-
-                  <div className="flex gap-2 mt-3">
-                    {s.status === 'pending' && (
-                      <>
-                        <button
-                          onClick={() => handleUpdateStatus(s, 'approved')}
-                          className="flex-1 border-2 border-border-main bg-primary-blue text-white px-2 py-1 rounded-lg text-[0.6rem] font-black uppercase shadow-[2px_2px_0px_var(--border)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
-                        >
-                          Terima
-                        </button>
-                        <button
-                          onClick={() => handleUpdateStatus(s, 'rejected')}
-                          className="flex-1 bg-danger text-white border-2 border-border-main px-2 py-1 rounded-lg text-[0.6rem] font-black uppercase shadow-[2px_2px_0px_var(--border)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
-                        >
-                          Tolak
-                        </button>
-                      </>
-                    )}
-                    {s.status !== 'pending' && (
-                      <div
-                        className={`w-full text-center py-1 rounded-lg border-2 border-border-main text-[0.6rem] font-black uppercase ${
-                          s.status === 'approved' ? 'bg-primary-blue' : 'bg-danger'
-                        } text-white`}
-                      >
-                        {s.status}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
+                suggestion={s}
+                onUpdateStatus={onUpdateStatusClick}
+              />
             ))}
 
             {suggestions.length === 0 && (
@@ -167,6 +94,28 @@ export default function AdminSuggestions() {
           </div>
         )}
       </main>
+
+      {/* Confirmation Modal */}
+      <ConfirmModal
+        isOpen={confirmConfig.isOpen}
+        title="Konfirmasi Status"
+        message={`Apakah Anda yakin ingin mengubah status saran ini menjadi ${confirmConfig.newStatus}?`}
+        confirmText="Ya, Update"
+        onConfirm={executeUpdate}
+        onCancel={() => setConfirmConfig({ ...confirmConfig, isOpen: false })}
+      />
+
+      {/* Alert Modal */}
+      <ConfirmModal
+        isOpen={alertConfig.isOpen}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        type={alertConfig.type}
+        confirmText="OK"
+        cancelText=""
+        onConfirm={() => setAlertConfig({ ...alertConfig, isOpen: false })}
+        onCancel={() => setAlertConfig({ ...alertConfig, isOpen: false })}
+      />
     </div>
   );
 }

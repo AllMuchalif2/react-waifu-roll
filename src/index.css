@@ -50,13 +50,22 @@
     box-shadow: 4px 4px 0px var(--border);
   }
 
+  .btn-neo, .btn-neo-secondary, .btn-neo-danger, .btn-neo-outline {
+    @apply inline-flex items-center justify-center gap-2 w-full px-6 py-3 border-2 border-border-main rounded-xl font-semibold uppercase cursor-pointer transition-all duration-150;
+  }
+
+  /* Hover States */
+  .btn-neo:hover, .btn-neo-secondary:hover, .btn-neo-danger:hover, .btn-neo-outline:hover {
+    @apply -translate-x-px -translate-y-px brightness-110;
+  }
+
   .btn-neo {
-    @apply inline-flex items-center justify-center gap-2 w-full px-6 py-3 bg-primary-blue text-white border-2 border-border-main rounded-xl font-semibold uppercase cursor-pointer transition-all duration-150;
+    @apply bg-primary-blue text-white;
     box-shadow: 6px 6px 0px var(--color-secondary-yellow);
   }
 
   .btn-neo:active {
-    @apply translate-x-[3px] translate-y-[3px];
+    @apply translate-x-px translate-y-px brightness-95;
     box-shadow: 3px 3px 0px var(--color-secondary-yellow);
   }
 
@@ -66,6 +75,7 @@
   }
 
   .btn-neo-secondary:active {
+    @apply translate-x-px translate-y-px brightness-95;
     box-shadow: 3px 3px 0px var(--color-primary-blue);
   }
 
@@ -75,10 +85,21 @@
   }
 
   .btn-neo-danger:active {
+    @apply translate-x-px translate-y-px brightness-95;
     box-shadow: 3px 3px 0px var(--border);
   }
 
-  .btn-neo:disabled {
+  .btn-neo-outline {
+    @apply bg-card-bg text-text-main;
+    box-shadow: 4px 4px 0px var(--border);
+  }
+
+  .btn-neo-outline:active {
+    @apply translate-x-px translate-y-px brightness-95;
+    box-shadow: 2px 2px 0px var(--border);
+  }
+
+  .btn-neo:disabled, .btn-neo-secondary:disabled, .btn-neo-danger:disabled, .btn-neo-outline:disabled {
     @apply opacity-60 cursor-not-allowed translate-x-0 translate-y-0 shadow-none;
   }
 
