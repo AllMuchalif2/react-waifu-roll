@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 
 // Public Pages
 import Home from './pages/public/Home';
@@ -28,55 +29,57 @@ import AdminRoute from './components/AdminRoute';
 
 export default function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <Routes>
-          {/* Public Routes */}
-          <Route path="/" element={<Home />} />
-          <Route path="/waifus" element={<Waifus />} />
-          <Route path="/rank" element={<Rank />} />
-          <Route path="/changelog" element={<Changelog />} />
+    <ThemeProvider>
+      <AuthProvider>
+        <Router>
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<Home />} />
+            <Route path="/waifus" element={<Waifus />} />
+            <Route path="/rank" element={<Rank />} />
+            <Route path="/changelog" element={<Changelog />} />
 
-          {/* Auth Routes */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/admin-login" element={<AdminLogin />} />
+            {/* Auth Routes */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/admin-login" element={<AdminLogin />} />
 
-          {/* Player Routes (Sudah ada proteksi di dalam komponen) */}
-          <Route path="/dashboard" element={<PlayerDashboard />} />
-          <Route path="/gacha" element={<Gacha />} />
-          <Route path="/history" element={<History />} />
-          <Route path="/suggestions" element={<Suggestions />} />
+            {/* Player Routes (Sudah ada proteksi di dalam komponen) */}
+            <Route path="/dashboard" element={<PlayerDashboard />} />
+            <Route path="/gacha" element={<Gacha />} />
+            <Route path="/history" element={<History />} />
+            <Route path="/suggestions" element={<Suggestions />} />
 
-          {/* Admin Routes (Proteksi Level Route) */}
-          <Route
-            path="/admin"
-            element={
-              <AdminRoute>
-                <AdminDashboard />
-              </AdminRoute>
-            }
-          />
-          <Route
-            path="/admin/waifus"
-            element={
-              <AdminRoute>
-                <AdminWaifus />
-              </AdminRoute>
-            }
-          />
-          <Route
-            path="/admin/suggestions"
-            element={
-              <AdminRoute>
-                <AdminSuggestions />
-              </AdminRoute>
-            }
-          />
-        </Routes>
-      </Router>
-    </AuthProvider>
+            {/* Admin Routes (Proteksi Level Route) */}
+            <Route
+              path="/admin"
+              element={
+                <AdminRoute>
+                  <AdminDashboard />
+                </AdminRoute>
+              }
+            />
+            <Route
+              path="/admin/waifus"
+              element={
+                <AdminRoute>
+                  <AdminWaifus />
+                </AdminRoute>
+              }
+            />
+            <Route
+              path="/admin/suggestions"
+              element={
+                <AdminRoute>
+                  <AdminSuggestions />
+                </AdminRoute>
+              }
+            />
+          </Routes>
+        </Router>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }

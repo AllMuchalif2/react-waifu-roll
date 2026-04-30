@@ -31,7 +31,6 @@ export default function AdminSuggestions() {
     setLoading(true);
 
     if (newStatus === 'approved') {
-      // 1. Masukkan ke waifu_pool
       const { error: poolError } = await supabase.from('waifu_pool').insert([
         {
           jikan_id: suggestion.jikan_id,
@@ -47,7 +46,6 @@ export default function AdminSuggestions() {
         return;
       }
 
-      // 2. Log Changelog
       await supabase.from('waifu_changelogs').insert([
         {
           action: 'ADD',
@@ -57,7 +55,6 @@ export default function AdminSuggestions() {
       ]);
     }
 
-    // 3. Update status saran
     const { error } = await supabase
       .from('waifu_suggestions')
       .update({ status: newStatus })
@@ -66,17 +63,17 @@ export default function AdminSuggestions() {
     if (error) {
       alert('Gagal mengupdate status: ' + error.message);
     } else {
-      fetchSuggestions(); // Refresh data
+      fetchSuggestions();
     }
     setLoading(false);
   };
 
   return (
-    <div className="min-h-screen bg-bg-light">
+    <div className="min-h-screen bg-bg-main">
       <AdminNavbar />
-      <main className="px-4 max-w-5xl mx-auto pb-20">
-        <header className="mb-8">
-          <h1 className="text-2xl font-black uppercase italic">
+      <main className="px-4 max-w-5xl mx-auto pb-20 transition-colors duration-300">
+        <header className="mb-8 mt-4">
+          <h1 className="text-2xl font-black uppercase italic text-text-main">
             Manajemen Saran Waifu
           </h1>
           <p className="text-text-muted text-sm mt-1">
@@ -84,16 +81,15 @@ export default function AdminSuggestions() {
           </p>
         </header>
 
-        {/* Filter Status */}
         <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
           {['all', 'pending', 'approved', 'rejected'].map((s) => (
             <button
               key={s}
               onClick={() => setFilter(s)}
-              className={`px-4 py-2 rounded-xl border-2 border-text-dark font-black text-[0.65rem] uppercase transition-all shadow-[3px_3px_0px_#1a1a1a] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none ${
+              className={`px-4 py-2 rounded-xl border-2 border-border-main font-black text-[0.65rem] uppercase transition-all shadow-[3px_3px_0px_var(--border)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none ${
                 filter === s
-                  ? 'bg-secondary-yellow text-text-dark'
-                  : 'bg-white text-text-muted'
+                  ? 'bg-secondary-yellow text-[#1a1a1a]'
+                  : 'bg-card-bg text-text-muted'
               }`}
             >
               {s}
@@ -102,7 +98,7 @@ export default function AdminSuggestions() {
         </div>
 
         {loading ? (
-          <div className="text-center py-20 font-bold animate-pulse text-lg">
+          <div className="text-center py-20 font-bold animate-pulse text-lg text-text-main">
             Memuat saran...
           </div>
         ) : (
@@ -110,25 +106,25 @@ export default function AdminSuggestions() {
             {suggestions.map((s) => (
               <div
                 key={s.id}
-                className="card-neo bg-white flex gap-4 animate-fade-in"
+                className="card-neo bg-card-bg flex gap-4 animate-fade-in border-border-main"
               >
                 <img
                   src={s.image_url}
-                  className="w-24 h-24 rounded-xl border-2 border-text-dark object-cover shadow-[4px_4px_0px_#1a1a1a]"
+                  className="w-24 h-24 rounded-xl border-2 border-border-main object-cover shadow-[4px_4px_0px_var(--border)]"
                   alt=""
                 />
                 <div className="flex-1 flex flex-col justify-between">
                   <div>
                     <div className="flex justify-between items-start">
-                      <h3 className="text-sm font-black leading-tight">
+                      <h3 className="text-sm font-black leading-tight text-text-main">
                         {s.waifu_name}
                       </h3>
-                      <span className="text-[0.6rem] bg-gray-100 px-2 py-1 rounded font-bold border border-text-dark/10">
+                      <span className="text-[0.6rem] bg-bg-main px-2 py-1 rounded font-bold border border-border-main/10 text-text-main">
                         {s.suggested_tier}
                       </span>
                     </div>
                     <p className="text-[0.65rem] text-text-muted mt-1 italic">
-                      Disarankan oleh: <b>{s.profiles?.username || 'User'}</b>
+                      Disarankan oleh: <b className="text-text-main">{s.profiles?.username || 'User'}</b>
                     </p>
                   </div>
 
@@ -137,13 +133,13 @@ export default function AdminSuggestions() {
                       <>
                         <button
                           onClick={() => handleUpdateStatus(s, 'approved')}
-                          className="flex-1 border-2 border-text-dark px-2 py-1 rounded-lg text-[0.6rem] font-black uppercase shadow-[2px_2px_0px_#1a1a1a]"
+                          className="flex-1 border-2 border-border-main bg-primary-blue text-white px-2 py-1 rounded-lg text-[0.6rem] font-black uppercase shadow-[2px_2px_0px_var(--border)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
                         >
                           Terima
                         </button>
                         <button
                           onClick={() => handleUpdateStatus(s, 'rejected')}
-                          className="flex-1 bg-danger text-white border-2 border-text-dark px-2 py-1 rounded-lg text-[0.6rem] font-black uppercase shadow-[2px_2px_0px_#1a1a1a]"
+                          className="flex-1 bg-danger text-white border-2 border-border-main px-2 py-1 rounded-lg text-[0.6rem] font-black uppercase shadow-[2px_2px_0px_var(--border)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
                         >
                           Tolak
                         </button>
@@ -151,8 +147,8 @@ export default function AdminSuggestions() {
                     )}
                     {s.status !== 'pending' && (
                       <div
-                        className={`w-full text-center py-1 rounded-lg border-2 border-text-dark text-[0.6rem] font-black uppercase ${
-                          s.status === 'approved' ? 'bg-success' : 'bg-danger'
+                        className={`w-full text-center py-1 rounded-lg border-2 border-border-main text-[0.6rem] font-black uppercase ${
+                          s.status === 'approved' ? 'bg-primary-blue' : 'bg-danger'
                         } text-white`}
                       >
                         {s.status}

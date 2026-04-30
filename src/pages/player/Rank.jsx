@@ -46,7 +46,7 @@ export default function Rank() {
         ) : (
           <div className="card-neo p-0 overflow-hidden border-2 border-text-dark shadow-[4px_4px_0px_#1a1a1a]">
             <table className="w-full text-left border-collapse">
-              <thead className="bg-text-dark text-white">
+              <thead className="bg-text-dark text-text-main">
                 <tr className="text-[0.65rem] uppercase tracking-wider font-black">
                   <th className="p-3">#</th>
                   <th className="p-3">User</th>
@@ -65,7 +65,7 @@ export default function Rank() {
                       {player.username}
                     </td>
                     <td className="p-3 text-center">
-                      <span className="bg-text-dark text-white px-2 py-0.5 rounded-full text-[0.6rem]">
+                      <span className="bg-text-dark text-text-main px-2 py-0.5 rounded-full text-[0.6rem]">
                         {player.waifu_count}
                       </span>
                     </td>

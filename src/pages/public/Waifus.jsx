@@ -17,23 +17,40 @@ export default function Waifus() {
 
   const fetchWaifus = async () => {
     setLoading(true);
+
     const { data, error } = await supabase
       .from('waifu_pool')
-      .select('*, user_waifus(profiles(username))')
-      .order('tier', { ascending: true });
+      .select('*, user_waifus(profiles(username))');
 
     if (!error && data) {
-      // Format data agar lebih mudah dibaca di komponen
-      const formatted = data.map((w) => ({
+      let formatted = data.map((w) => ({
         ...w,
         owner: w.user_waifus?.[0]?.profiles?.username || null,
       }));
+
+      const tierRank = {
+        LIMITED: 1,
+        UR: 2,
+        SSR: 3,
+        SR: 4,
+        S: 5,
+        A: 6,
+        B: 7,
+        C: 8,
+      };
+
+      formatted.sort((a, b) => {
+        const rankA = tierRank[a.tier?.toUpperCase()] || 99;
+        const rankB = tierRank[b.tier?.toUpperCase()] || 99;
+        return rankA - rankB;
+      });
+
       setWaifus(formatted);
     }
+
     setLoading(false);
   };
 
-  // Menggunakan pendekatan derived state agar pencarian sangat responsif tanpa hit API berulang
   const filteredWaifus = waifus.filter((w) => {
     const matchName = w.name.toLowerCase().includes(search.toLowerCase());
     const matchTier = tierFilter ? w.tier === tierFilter : true;
@@ -44,7 +61,6 @@ export default function Waifus() {
     <>
       <Navbar />
       <main className="px-4 max-w-3xl mx-auto">
-        {/* Panel Filter */}
         <div className="card-neo mb-6 p-4">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl">Daftar Waifu Pool</h2>
@@ -61,13 +77,13 @@ export default function Waifus() {
               <input
                 type="text"
                 placeholder="Cari waifu..."
-                className="w-full pl-10 pr-4 py-3 border-2 border-text-dark rounded-xl outline-none focus:border-primary-blue transition-colors font-sans font-medium"
+                className="w-full pl-10 pr-4 py-3 border-2 border-border-main rounded-xl outline-none focus:border-primary-blue transition-colors font-sans font-medium"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
             </div>
             <select
-              className="p-3 border-2 border-text-dark rounded-xl outline-none font-sans font-bold bg-white cursor-pointer"
+              className="p-3 border-2 border-border-main rounded-xl outline-none font-sans font-bold cursor-pointer"
               value={tierFilter}
               onChange={(e) => setTierFilter(e.target.value)}
             >
@@ -85,7 +101,6 @@ export default function Waifus() {
           </div>
         </div>
 
-        {/* Grid Waifu */}
         {loading ? (
           <div className="text-center font-bold animate-pulse text-xl mt-10">
             <i className="fa-solid fa-circle-notch fa-spin mr-2"></i> Memuat

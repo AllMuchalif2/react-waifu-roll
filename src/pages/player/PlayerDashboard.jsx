@@ -20,14 +20,12 @@ export default function PlayerDashboard() {
   const [isBuyingDice, setIsBuyingDice] = useState(false);
   const [buyAmount, setBuyAmount] = useState(1);
 
-  // Filter Inventory di sisi Client
   const filteredInventory = inventory.filter((item) => {
     const matchName = item.name.toLowerCase().includes(search.toLowerCase());
     const matchTier = tierFilter ? item.tier === tierFilter : true;
     return matchName && matchTier;
   });
 
-  // Proteksi Halaman (Redirect jika belum login)
   useEffect(() => {
     if (!authLoading && !user) navigate('/login');
   }, [user, authLoading, navigate]);
@@ -36,7 +34,6 @@ export default function PlayerDashboard() {
     if (user) fetchInventory();
   }, [user]);
 
-  // Ambil data waifu dan kelompokkan (Grouping)
   const fetchInventory = async () => {
     setLoading(true);
     const { data } = await supabase
@@ -45,14 +42,13 @@ export default function PlayerDashboard() {
       .eq('user_id', user.id);
 
     if (data) {
-      // Mengelompokkan waifu yang sama agar tidak menuh-menuhin layar
       const grouped = data.reduce((acc, curr) => {
         const w = curr.waifu_pool;
         if (!acc[w.id]) {
           acc[w.id] = { ...w, total: 0, instanceIds: [] };
         }
         acc[w.id].total += 1;
-        acc[w.id].instanceIds.push(curr.id); // Simpan ID unik tabel untuk dijual nanti
+        acc[w.id].instanceIds.push(curr.id);
         return acc;
       }, {});
       setInventory(Object.values(grouped).sort((a, b) => b.total - a.total));
@@ -60,7 +56,6 @@ export default function PlayerDashboard() {
     setLoading(false);
   };
 
-  // Fitur Klaim Dadu Harian
   const handleDailyClaim = async () => {
     const today = new Date().toISOString().split('T')[0];
     if (profile.last_daily_claim === today) {
@@ -76,11 +71,10 @@ export default function PlayerDashboard() {
       .eq('id', user.id);
 
     setClaimMsg('+10 Dadu Berhasil Diklaim!');
-    fetchProfile(user.id); // Update context
+    fetchProfile(user.id);
     setTimeout(() => setClaimMsg(''), 3000);
   };
 
-  // Fitur Beli Dadu
   const confirmBuyDice = async () => {
     const totalCost = buyAmount * 100;
     if (profile.coins < totalCost) {
@@ -105,26 +99,20 @@ export default function PlayerDashboard() {
     setLoading(false);
   };
 
-  // Tahap 1: Buka Modal Konfirmasi Jual
   const handleSell = (waifu) => {
     setSellingWaifu(waifu);
-    setSellAmount(1); // Reset jumlah jual ke 1
+    setSellAmount(1);
   };
-
-  // Tahap 2: Eksekusi Jual (Setelah Klik di Modal)
   const confirmSell = async () => {
     if (!sellingWaifu || sellAmount < 1) return;
 
-    // Pastikan tidak menjual lebih dari yang dimiliki
     const finalAmount = Math.min(sellAmount, sellingWaifu.total);
     const idsToSell = sellingWaifu.instanceIds.slice(0, finalAmount);
     const pricePerUnit = PRICE_MAP[sellingWaifu.tier] || 10;
     const totalPrice = pricePerUnit * finalAmount;
 
     setLoading(true);
-    // Hapus beberapa waifu sekaligus dari inventory
     await supabase.from('user_waifus').delete().in('id', idsToSell);
-    // Tambah koin pemain (total)
     await supabase
       .from('profiles')
       .update({ coins: profile.coins + totalPrice })
@@ -132,7 +120,7 @@ export default function PlayerDashboard() {
 
     await fetchProfile(user.id);
     await fetchInventory();
-    setSellingWaifu(null); // Tutup Modal
+    setSellingWaifu(null);
     setLoading(false);
   };
 
@@ -148,11 +136,10 @@ export default function PlayerDashboard() {
     <>
       <Navbar />
       <main className="px-4 max-w-3xl mx-auto pb-24">
-        {/* Panel Status Pemain */}
-        <div className="card-neo mb-6 bg-text-dark text-white border-primary-blue shadow-[6px_6px_0px_#3d5afe]">
+        <div className="card-neo mb-6 bg-text-dark text-text-main border-primary-blue shadow-[6px_6px_0px_#3d5afe]">
           <div className="flex justify-between items-center mb-4">
             <div>
-              <h2 className="text-2xl text-secondary-yellow">
+              <h2 className="text-2xl text-primary-blue font-bold">
                 {profile.username}
               </h2>
               <p className="text-xs opacity-70 font-mono mt-1">
@@ -162,7 +149,7 @@ export default function PlayerDashboard() {
             <div className="flex flex-col items-end gap-2">
               <button
                 onClick={handleLogout}
-                className="text-[0.6rem] bg-white/10 hover:bg-danger/20 px-2 py-1 rounded-md transition-colors border border-white/20 uppercase font-black tracking-tighter"
+                className="text-[0.6rem] bg-secondary-yellow/10 hover:bg-secondary-yellow/20 px-2 py-1 rounded-md transition-colors border border-white/20 uppercase font-black tracking-tighter"
               >
                 <i className="fa-solid fa-right-from-bracket mr-1"></i>
                 Keluar
@@ -171,22 +158,22 @@ export default function PlayerDashboard() {
           </div>
 
           <div className="flex gap-4 mb-4">
-            <div className="flex-1 bg-white/10 p-3 rounded-xl border border-white/20 text-center">
+            <div className="flex-1 bg-primary-blue/10 p-3 rounded-xl border border-primary-blue/20 text-center">
               <i className="fa-solid fa-coins text-secondary-yellow text-xl mb-1"></i>
               <div className="font-black text-lg">{profile.coins}</div>
               <div className="text-[0.65rem] opacity-70 uppercase tracking-wider">
                 Koin
               </div>
             </div>
-            <div className="flex-1 bg-white/10 p-3 rounded-xl border border-white/20 text-center relative group">
-              <i className="fa-solid fa-dice text-white text-xl mb-1"></i>
+            <div className="flex-1 bg-primary-blue/10 p-3 rounded-xl border border-primary-blue/20 text-center relative group">
+              <i className="fa-solid fa-dice text-secondary-yellow text-xl mb-1"></i>
               <div className="font-black text-lg">{profile.dice_count}</div>
               <div className="text-[0.65rem] opacity-70 uppercase tracking-wider">
                 Dadu
               </div>
               <button
                 onClick={() => setIsBuyingDice(true)}
-                className="absolute top-1 right-1 w-6 h-6 bg-secondary-yellow text-text-dark rounded-full flex items-center justify-center border border-text-dark text-xs font-black shadow-[2px_2px_0px_#1a1a1a] hover:scale-110 active:scale-95 transition-transform"
+                className="absolute top-1 right-1 w-6 h-6 bg-secondary-yellow text-black rounded-full flex items-center justify-center border border-text-main text-xs font-black shadow-[2px_2px_0px_#1a1a1a] hover:scale-110 active:scale-95 transition-transform"
                 title="Beli Dadu"
               >
                 +
@@ -218,7 +205,6 @@ export default function PlayerDashboard() {
           )}
         </div>
 
-        {/* Akses Cepat Luar Card */}
         <div className="grid grid-cols-3 gap-2 mb-8">
           <Link to="/history" className="btn-neo no-underline text-[0.65rem]">
             <i className="fa-solid fa-clock-rotate-left"></i> Riwayat
@@ -241,7 +227,6 @@ export default function PlayerDashboard() {
           )}
         </div>
 
-        {/* Filter & Search Inventory */}
         <div className="flex flex-col gap-3 mb-6">
           <div className="relative">
             <i className="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-text-muted"></i>
@@ -254,7 +239,7 @@ export default function PlayerDashboard() {
             />
           </div>
           <select
-            className="p-3 border-2 border-text-dark rounded-xl outline-none font-sans font-bold bg-white cursor-pointer"
+            className="p-3 border-2 border-text-dark rounded-xl outline-none font-sans font-bold bg-text-dark cursor-pointer"
             value={tierFilter}
             onChange={(e) => setTierFilter(e.target.value)}
           >
@@ -271,7 +256,6 @@ export default function PlayerDashboard() {
           </select>
         </div>
 
-        {/* Inventory Waifu */}
         <h3 className="text-xl mb-4 text-center border-b-2 border-text-dark pb-2 inline-block mx-auto block w-max uppercase italic font-black">
           Koleksi Waifu (
           {filteredInventory.reduce((acc, curr) => acc + curr.total, 0)})
@@ -300,10 +284,9 @@ export default function PlayerDashboard() {
         )}
       </main>
 
-      {/* MODAL JUAL WAIFU (Premium UI) */}
       {sellingWaifu && (
-        <div className="fixed inset-0 bg-text-dark/80 backdrop-blur-sm z-[100] flex items-center justify-center p-6 animate-fade-in">
-          <div className="card-neo w-full max-w-sm bg-white animate-zoom-in">
+        <div className="fixed inset-0 bg-danger/80 backdrop-blur-sm z-[100] flex items-center justify-center p-6 animate-fade-in">
+          <div className="card-neo w-full max-w-sm bg-text-dark border-danger animate-zoom-in">
             <div className="flex flex-col items-center text-center">
               <div className="w-20 h-20 bg-danger/10 rounded-full flex items-center justify-center mb-4 border-2 border-danger text-danger">
                 <i className="fa-solid fa-hand-holding-dollar text-4xl"></i>
@@ -313,8 +296,7 @@ export default function PlayerDashboard() {
                 Pilih jumlah <b>{sellingWaifu.name}</b> yang ingin dijual:
               </p>
 
-              {/* Input Jumlah Jual */}
-              <div className="w-full bg-gray-50 p-4 rounded-2xl border-2 border-text-dark mb-6">
+              <div className="w-full bg-text-dark p-4 rounded-2xl border-2 border-danger mb-6">
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-[0.65rem] font-black uppercase opacity-50">
                     Jumlah (Maks: {sellingWaifu.total})
@@ -378,10 +360,9 @@ export default function PlayerDashboard() {
         </div>
       )}
 
-      {/* MODAL BELI DADU */}
       {isBuyingDice && (
-        <div className="fixed inset-0 bg-text-dark/80 backdrop-blur-sm z-[100] flex items-center justify-center p-6 animate-fade-in">
-          <div className="card-neo w-full max-w-sm bg-white animate-zoom-in">
+        <div className="fixed inset-0 bg-primary-blue/80 backdrop-blur-sm z-[100] flex items-center justify-center p-6 animate-fade-in">
+          <div className="card-neo w-full max-w-sm bg-text-dark border-primary-blue animate-zoom-in">
             <div className="flex flex-col items-center text-center">
               <div className="w-20 h-20 bg-primary-blue/10 rounded-full flex items-center justify-center mb-4 border-2 border-primary-blue text-primary-blue">
                 <i className="fa-solid fa-dice text-4xl"></i>
@@ -392,7 +373,7 @@ export default function PlayerDashboard() {
                 <b>1 Dadu = 100 Koin</b>
               </p>
 
-              <div className="w-full bg-gray-50 p-4 rounded-2xl border-2 border-text-dark mb-6">
+              <div className="w-full bg-text-dark p-4 rounded-2xl border-2 border-primary-blue mb-6">
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-[0.65rem] font-black uppercase opacity-50">
                     Jumlah Dadu

@@ -1,30 +1,29 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import Navbar from '../../components/Navbar';
 import BottomNav from '../../components/BottomNav';
 import WaifuCard from '../../components/WaifuCard';
-import { animate as anime } from 'animejs';
 import { DROP_RATES, PRICE_MAP } from '../../config/gachaConfig';
 
 export default function Gacha() {
   const { user, profile, fetchProfile, loading: authLoading } = useAuth();
   const navigate = useNavigate();
-  const [isRolling, setIsRolling] = useState(false);
+
+  const [isFetching, setIsFetching] = useState(false);
+  const [isRollDisabled, setIsRollDisabled] = useState(false);
+  const [countdown, setCountdown] = useState(0);
+  const [flashClass, setFlashClass] = useState('');
+
   const [result, setResult] = useState(null);
   const [msg, setMsg] = useState('');
   const [showRates, setShowRates] = useState(false);
 
-  // Proteksi Halaman
   useEffect(() => {
     if (!authLoading && !user) navigate('/login');
   }, [user, authLoading, navigate]);
 
-  // Referensi elemen untuk animasi Anime.js
-  const boxRef = useRef(null);
-
-  // Fungsi Logika RNG Gacha
   const getRandomTier = () => {
     const rand = Math.random() * 100;
     let cumulative = 0;
@@ -32,7 +31,7 @@ export default function Gacha() {
       cumulative += rate.chance;
       if (rand <= cumulative) return rate.tier;
     }
-    return 'C'; // Fallback
+    return 'C';
   };
 
   const handleRoll = async () => {
@@ -41,45 +40,39 @@ export default function Gacha() {
       return;
     }
 
-    setIsRolling(true);
+    setIsFetching(true);
+    setIsRollDisabled(true);
     setResult(null);
     setMsg('');
+    setFlashClass('');
 
     try {
-      // 1. Kurangi dadu secara optimistik di UI & Database
       await supabase
         .from('profiles')
         .update({ dice_count: profile.dice_count - 1 })
         .eq('id', user.id);
       fetchProfile(user.id);
 
-      // 2. Tentukan Tier Waifu (RNG)
       let selectedTier = getRandomTier();
 
-      // 3. Ambil waifu sesuai tier (Include check kepemilikan untuk LIMITED)
       let { data: poolItems } = await supabase
         .from('waifu_pool')
         .select('*, user_waifus(id)')
         .eq('tier', selectedTier);
 
-      // Filter: Jika LIMITED, buang yang sudah ada pemiliknya (1/1 Rule)
       if (selectedTier === 'LIMITED') {
         poolItems = poolItems.filter((item) => item.user_waifus.length === 0);
       }
 
-      // SMART FALLBACK: Jika tier terpilih kosong (atau semua LIMITED sudah dimiliki)
       if (!poolItems || poolItems.length === 0) {
         const { data: allAvailable } = await supabase
           .from('waifu_pool')
           .select('*, user_waifus(id)');
 
         if (!allAvailable || allAvailable.length === 0) {
-          throw new Error(
-            'Maaf, mesin gacha sedang kosong! Admin belum menambahkan waifu apapun.',
-          );
+          throw new Error('Maaf, mesin gacha sedang kosong!');
         }
 
-        // Filter out owned LIMITED dari seluruh pool
         poolItems = allAvailable.filter((item) => {
           if (item.tier === 'LIMITED' && item.user_waifus.length > 0)
             return false;
@@ -88,7 +81,7 @@ export default function Gacha() {
 
         if (poolItems.length === 0) {
           throw new Error(
-            'Wah! Semua waifu LIMITED sudah habis dimiliki pemain lain. Pool saat ini kosong.',
+            'Wah! Semua waifu LIMITED sudah habis dimiliki pemain lain.',
           );
         }
       }
@@ -96,93 +89,87 @@ export default function Gacha() {
       const randomWaifu =
         poolItems[Math.floor(Math.random() * poolItems.length)];
 
-      // 4. Simpan ke Inventory Player
-      await supabase.from('user_waifus').insert([
-        {
-          user_id: user.id,
-          waifu_id: randomWaifu.id,
-        },
-      ]);
+      await supabase
+        .from('user_waifus')
+        .insert([{ user_id: user.id, waifu_id: randomWaifu.id }]);
 
-      // 5. Simpan ke Riwayat (Optional untuk Log)
-      await supabase.from('gacha_history').insert([
-        {
-          user_id: user.id,
-          waifu_id: randomWaifu.id,
-        },
-      ]);
+      await supabase
+        .from('gacha_history')
+        .insert([{ user_id: user.id, waifu_id: randomWaifu.id }]);
 
-      // 6. Jalankan Animasi Kotak Gacha (Anime.js)
-      anime(boxRef.current, {
-        scale: [1, 1.2, 0.8, 1.5, 0], // Membesar lalu mengecil hilang
-        rotate: ['0deg', '15deg', '-15deg', '0deg', '360deg'], // Bergetar lalu berputar
-        duration: 1500,
-        easing: 'inOutQuad',
-        onComplete: () => {
-          setResult(randomWaifu);
-          setIsRolling(false);
-          // Putar suara jika dapat tier tinggi
-          if (['SSR', 'UR', 'LIMITED'].includes(randomWaifu.tier)) {
-            const audio = new Audio(
-              'https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3',
-            );
-            audio.volume = 0.5;
-            audio.play().catch((e) => console.log('Audio play error:', e));
-          }
-        },
-      });
+      await new Promise((resolve) => setTimeout(resolve, 800));
+
+      setIsFetching(false);
+      setResult(randomWaifu);
+
+      if (randomWaifu.tier === 'SSR') setFlashClass('flash-ssr');
+      else if (randomWaifu.tier === 'UR') setFlashClass('flash-ur');
+      else if (randomWaifu.tier === 'LIMITED') setFlashClass('flash-limited');
+
+      if (['SSR', 'UR', 'LIMITED'].includes(randomWaifu.tier)) {
+        const audio = new Audio(
+          'https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3',
+        );
+        audio.volume = 0.5;
+        audio.play().catch((e) => console.log('Audio play error:', e));
+      }
+
+      setCountdown(2);
+      const timer = setInterval(() => {
+        setCountdown((prev) => (prev > 0 ? prev - 1 : 0));
+      }, 1000);
+
+      setTimeout(() => {
+        setIsRollDisabled(false);
+        setCountdown(0);
+        clearInterval(timer);
+        setFlashClass('');
+      }, 2000);
     } catch (error) {
       setMsg(error.message);
-      setIsRolling(false);
+      setIsFetching(false);
+      setIsRollDisabled(false);
     }
   };
-
-  // Efek munculnya kartu hasil (Fade In)
-  useEffect(() => {
-    if (result) {
-      anime('.result-card', {
-        opacity: [0, 1],
-        translateY: [20, 0],
-        duration: 800,
-        easing: 'outExpo',
-      });
-    }
-  }, [result]);
 
   if (!profile) return null;
 
   return (
     <>
+      {flashClass && <div className={`screen-flash ${flashClass}`}></div>}
+
       <Navbar />
       <main className="px-4 max-w-md mx-auto text-center pb-24">
         <div className="flex justify-center gap-2 mb-8">
-          <div className="inline-flex items-center gap-2 bg-text-dark text-white px-4 py-2 rounded-xl font-bold border-2 border-primary-blue shadow-[4px_4px_0px_#ffea00]">
+          <div className="inline-flex items-center gap-2 bg-border-main text-bg-main px-4 py-2 rounded-xl font-bold border-2 border-primary-blue shadow-[4px_4px_0px_var(--color-secondary-yellow)]">
             <i className="fa-solid fa-dice"></i> Dadu: {profile.dice_count}
           </div>
           <button
             onClick={() => setShowRates(!showRates)}
-            className="w-10 h-10 bg-white border-2 border-text-dark rounded-xl flex items-center justify-center shadow-[4px_4px_0px_#1a1a1a] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all"
+            className="w-10 h-10 bg-card-bg border-2 border-border-main rounded-xl flex items-center justify-center shadow-[4px_4px_0px_var(--border)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all"
             title="Info Rate"
           >
             <i className="fa-solid fa-circle-info text-primary-blue"></i>
           </button>
         </div>
 
-        {/* Modal/Overlay Rate Info */}
         {showRates && (
-          <div className="card-neo mb-6 bg-white text-left animate-fade-in relative">
+          <div className="card-neo mb-6 bg-card-bg text-left animate-fade-in relative">
             <button
               onClick={() => setShowRates(false)}
               className="absolute top-2 right-2 text-text-muted hover:text-danger"
             >
               <i className="fa-solid fa-xmark text-xl"></i>
             </button>
-            <h3 className="text-sm font-black mb-3 border-b-2 border-text-dark pb-1 uppercase italic">
+            <h3 className="text-sm font-black mb-3 border-b-2 border-border-main pb-1 uppercase italic">
               Gacha Rates & Prices
             </h3>
             <div className="flex flex-col gap-1">
               {DROP_RATES.map((r) => (
-                <div key={r.tier} className="flex justify-between text-[0.7rem]">
+                <div
+                  key={r.tier}
+                  className="flex justify-between text-[0.7rem]"
+                >
                   <span className="font-bold">
                     {r.label || r.tier} ({r.tier})
                   </span>
@@ -190,7 +177,7 @@ export default function Gacha() {
                     <span className="text-primary-blue font-black">
                       {r.chance}%
                     </span>
-                    <span className="text-secondary-yellow bg-text-dark px-1 rounded font-bold">
+                    <span className="text-text-main px-1 rounded font-bold">
                       {PRICE_MAP[r.tier]} Koin
                     </span>
                   </div>
@@ -208,37 +195,38 @@ export default function Gacha() {
         )}
 
         <div className="relative min-h-[300px] flex flex-col items-center justify-center mt-4">
-          {/* STATE 1: Kotak Misteri / Animasi Roll */}
-          {!result && (
-            <div
-              ref={boxRef}
-              className="w-32 h-32 bg-secondary-yellow border-4 border-text-dark rounded-2xl flex items-center justify-center shadow-[8px_8px_0px_#1a1a1a] mb-8"
-            >
-              <i className="fa-solid fa-question text-6xl text-text-dark"></i>
+          {isFetching ? (
+            <div className="p-1 text-center">
+              <p className="text-sm font-bold text-primary-blue">
+                <i className="fa-solid fa-spinner fa-spin"></i> Menggacha...
+              </p>
             </div>
-          )}
-
-          {/* Tombol Roll (Sembunyi saat animasi) */}
-          {!isRolling && !result && (
-            <button onClick={handleRoll} className="btn-neo text-xl py-4 mt-4">
-              ROLL SEKARANG
+          ) : !result ? (
+            <button
+              onClick={handleRoll}
+              disabled={isRollDisabled}
+              className={`btn-neo text-xl py-4 mt-4 w-full max-w-[250px] ${isRollDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+            >
+              {isRollDisabled ? `TUNGGU (${countdown}s)` : 'ROLL SEKARANG'}
             </button>
-          )}
+          ) : null}
 
-          {/* STATE 2: Hasil Waifu Muncul */}
-          {result && (
-            <div className="result-card opacity-0 w-full max-w-[280px] flex flex-col items-center">
-              <h2 className="text-xl font-black mb-4 text-primary-blue drop-shadow-md">
-                KAMU MENDAPATKAN:
-              </h2>
-              <WaifuCard waifu={result} />
+          {result && !isFetching && (
+            <div className="result-card w-full max-w-[280px] flex flex-col items-center animate-fade-in">
+              <div className="card-neo p-4 text-center overflow-hidden">
+                <h3 className="text-sm text-primary-blue mb-3 font-black uppercase">
+                  Selamat! Kamu mendapatkan:
+                </h3>
+                <WaifuCard waifu={result} />
+              </div>
 
               <div className="flex gap-2 w-full mt-6">
                 <button
-                  onClick={() => setResult(null)}
-                  className="btn-neo flex-1 text-sm"
+                  onClick={handleRoll}
+                  disabled={isRollDisabled}
+                  className={`btn-neo flex-1 text-sm ${isRollDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
-                  LAGI
+                  {isRollDisabled ? `TUNGGU (${countdown}s)` : 'LAGI'}
                 </button>
                 <Link
                   to="/dashboard"

@@ -29,14 +29,12 @@ export default function AdminWaifus() {
     if (data) setWaifuPool(data);
   };
 
-  // Filter data database di sisi client
   const filteredDbWaifus = waifuPool.filter((w) => {
     const matchName = w.name.toLowerCase().includes(dbSearch.toLowerCase());
     const matchTier = dbTierFilter ? w.tier === dbTierFilter : true;
     return matchName && matchTier;
   });
 
-  // 1. Fetch data dari Jikan API berdasarkan ID
   const handleFetchJikan = async (e) => {
     e.preventDefault();
     if (!jikanId) return;
@@ -64,7 +62,6 @@ export default function AdminWaifus() {
     setLoading(false);
   };
 
-  // 2. Cari berdasarkan Nama
   const handleSearchName = async (e) => {
     e.preventDefault();
     if (!searchName) return;
@@ -101,7 +98,6 @@ export default function AdminWaifus() {
     setJikanId('');
   };
 
-  // 3. Simpan ke Supabase
   const handleSave = async () => {
     if (!preview) return;
     setLoading(true);
@@ -130,7 +126,6 @@ export default function AdminWaifus() {
     if (error) {
       setMessage('Gagal menyimpan: ' + error.message);
     } else {
-      // Log Changelog: ADD
       await supabase.from('waifu_changelogs').insert([
         {
           action: 'ADD',
@@ -150,8 +145,7 @@ export default function AdminWaifus() {
   const handleDelete = async (id) => {
     if (!confirm('Hapus waifu ini dari pool?')) return;
 
-    // Cek apakah waifu ini sudah dimiliki pemain (Data Integrity)
-    const { count, error: checkError } = await supabase
+    const { count } = await supabase
       .from('user_waifus')
       .select('*', { count: 'exact', head: true })
       .eq('waifu_id', id);
@@ -163,7 +157,6 @@ export default function AdminWaifus() {
       return;
     }
 
-    // Ambil info waifu sebelum dihapus untuk log
     const { data: oldData } = await supabase
       .from('waifu_pool')
       .select('name')
@@ -172,7 +165,6 @@ export default function AdminWaifus() {
 
     const { error } = await supabase.from('waifu_pool').delete().eq('id', id);
     if (!error) {
-      // Log Changelog: DELETE
       await supabase.from('waifu_changelogs').insert([
         {
           action: 'DELETE',
@@ -189,7 +181,6 @@ export default function AdminWaifus() {
   };
 
   const handleUpdateTier = async (id, newTier) => {
-    // Ambil info lama untuk log
     const { data: oldData } = await supabase
       .from('waifu_pool')
       .select('name, tier')
@@ -202,7 +193,6 @@ export default function AdminWaifus() {
       .eq('id', id);
 
     if (!error) {
-      // Log Changelog: UPDATE
       await supabase.from('waifu_changelogs').insert([
         {
           action: 'UPDATE',
@@ -219,29 +209,26 @@ export default function AdminWaifus() {
     }
   };
 
-  // Update badge tier di preview jika pilihan dropdown diubah
   useEffect(() => {
     if (preview) setPreview((p) => ({ ...p, tier }));
   }, [tier]);
 
   return (
-    <div className="min-h-screen bg-bg-light">
+    <div className="min-h-screen bg-bg-main">
       <AdminNavbar />
-      <main className="px-4 max-w-md mx-auto flex flex-col gap-6 pb-20 mt-4">
-
-        <div className="card-neo">
-          <h1 className="text-xl mb-4 text-center font-black uppercase">
+      <main className="px-4 max-w-md mx-auto flex flex-col gap-6 pb-20 mt-4 transition-colors duration-300">
+        <div className="card-neo bg-card-bg">
+          <h1 className="text-xl mb-4 text-center font-black uppercase text-text-main">
             Tambah Waifu Pool
           </h1>
 
           {message && (
-            <div className="mb-4 p-3 bg-secondary-yellow text-text-dark text-center font-bold border-2 border-text-dark rounded-xl">
+            <div className="mb-4 p-3 bg-secondary-yellow text-[#1a1a1a] text-center font-bold border-2 border-border-main rounded-xl">
               {message}
             </div>
           )}
 
-          {/* Cari Berdasarkan Nama */}
-          <form onSubmit={handleSearchName} className="mb-6">
+          <form onSubmit={handleSearchName} className="mb-6 text-text-main">
             <label className="font-extrabold text-sm">Cari Nama Karakter</label>
             <div className="flex gap-2 mt-1">
               <input
@@ -249,7 +236,7 @@ export default function AdminWaifus() {
                 value={searchName}
                 onChange={(e) => setSearchName(e.target.value)}
                 placeholder="Contoh: Mikasa Ackerman"
-                className="flex-1 p-3 border-2 border-text-dark rounded-xl outline-none focus:border-primary-blue font-sans font-medium"
+                className="flex-1 p-3 border-2 border-border-main bg-bg-main rounded-xl outline-none focus:border-primary-blue font-sans font-medium"
               />
               <button
                 type="submit"
@@ -261,28 +248,27 @@ export default function AdminWaifus() {
             </div>
           </form>
 
-          {/* Hasil Pencarian Nama */}
           {searchResults.length > 0 && (
-            <div className="flex flex-col gap-2 mb-6 bg-gray-100 p-2 rounded-xl border-2 border-text-dark/10">
-              <p className="text-[0.65rem] font-black uppercase opacity-50 px-1">
+            <div className="flex flex-col gap-2 mb-6 bg-bg-main p-2 rounded-xl border-2 border-border-main/10">
+              <p className="text-[0.65rem] font-black uppercase opacity-50 px-1 text-text-main">
                 Pilih Karakter:
               </p>
               {searchResults.map((char) => (
                 <button
                   key={char.mal_id}
                   onClick={() => selectCharacter(char)}
-                  className="flex items-center gap-3 p-2 bg-white border-2 border-text-dark rounded-lg hover:bg-primary-blue/10 transition-colors text-left"
+                  className="flex items-center gap-3 p-2 bg-card-bg border-2 border-border-main rounded-lg hover:bg-primary-blue/10 transition-colors text-left"
                 >
                   <img
                     src={char.images.webp.small_image_url}
-                    className="w-10 h-10 rounded object-cover border border-text-dark"
+                    className="w-10 h-10 rounded object-cover border border-border-main"
                     alt=""
                   />
                   <div>
-                    <div className="text-xs font-black leading-tight">
+                    <div className="text-xs font-black leading-tight text-text-main">
                       {char.name}
                     </div>
-                    <div className="text-[0.6rem] opacity-60">
+                    <div className="text-[0.6rem] opacity-60 text-text-main">
                       ID: {char.mal_id}
                     </div>
                   </div>
@@ -291,13 +277,13 @@ export default function AdminWaifus() {
             </div>
           )}
 
-          <div className="relative h-px bg-text-dark/10 mb-6">
-            <span className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-2 text-[0.65rem] font-black opacity-30 italic">
+          <div className="relative h-px bg-border-main/10 mb-6">
+            <span className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 bg-card-bg px-2 text-[0.65rem] font-black opacity-30 italic text-text-main">
               ATAU GUNAKAN ID
             </span>
           </div>
 
-          <form onSubmit={handleFetchJikan} className="flex flex-col gap-4">
+          <form onSubmit={handleFetchJikan} className="flex flex-col gap-4 text-text-main">
             <div>
               <label className="font-extrabold text-sm">
                 Jikan Character ID
@@ -307,7 +293,7 @@ export default function AdminWaifus() {
                 value={jikanId}
                 onChange={(e) => setJikanId(e.target.value)}
                 placeholder="Contoh ID: 118744"
-                className="w-full p-3 border-2 border-text-dark rounded-xl mt-1 outline-none focus:border-primary-blue font-sans font-medium"
+                className="w-full p-3 border-2 border-border-main bg-bg-main rounded-xl mt-1 outline-none focus:border-primary-blue font-sans font-medium"
               />
             </div>
 
@@ -316,7 +302,7 @@ export default function AdminWaifus() {
               <select
                 value={tier}
                 onChange={(e) => setTier(e.target.value)}
-                className="w-full p-3 border-2 border-text-dark rounded-xl mt-1 outline-none font-sans font-bold bg-white cursor-pointer"
+                className="w-full p-3 border-2 border-border-main rounded-xl mt-1 outline-none font-sans font-bold bg-bg-main cursor-pointer"
               >
                 <option value="C">Tier C (Common)</option>
                 <option value="B">Tier B (Uncommon)</option>
@@ -337,14 +323,12 @@ export default function AdminWaifus() {
           </form>
         </div>
 
-        {/* Area Preview Waifu Card */}
         {preview && (
-          <div className="card-neo bg-bg-light border-dashed flex flex-col items-center">
-            <h2 className="text-lg mb-4 font-black text-center">
+          <div className="card-neo bg-bg-main border-dashed flex flex-col items-center border-primary-blue">
+            <h2 className="text-lg mb-4 font-black text-center text-text-main">
               Preview Kartu
             </h2>
             <div className="w-[180px]">
-              {/* Gunakan komponen WaifuCard yang sudah kita buat di Step 6 */}
               <WaifuCard waifu={preview} />
             </div>
             <button
@@ -358,27 +342,25 @@ export default function AdminWaifus() {
           </div>
         )}
 
-        {/* List Kelola Waifu Pool */}
-        <div className="card-neo">
-          <h2 className="text-lg mb-4 font-black uppercase flex items-center gap-2">
+        <div className="card-neo bg-card-bg">
+          <h2 className="text-lg mb-4 font-black uppercase flex items-center gap-2 text-text-main">
             <i className="fa-solid fa-layer-group text-primary-blue"></i>
             Database Pool ({filteredDbWaifus.length})
           </h2>
 
-          {/* Filter & Search Database */}
           <div className="flex flex-col gap-2 mb-6">
             <div className="relative">
               <i className="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-text-muted text-xs"></i>
               <input
                 type="text"
                 placeholder="Cari di database..."
-                className="w-full pl-9 pr-3 py-2 border-2 border-text-dark rounded-xl outline-none focus:border-primary-blue text-xs font-bold"
+                className="w-full pl-9 pr-3 py-2 border-2 border-border-main bg-bg-main rounded-xl outline-none focus:border-primary-blue text-xs font-bold text-text-main"
                 value={dbSearch}
                 onChange={(e) => setDbSearch(e.target.value)}
               />
             </div>
             <select
-              className="w-full p-2 border-2 border-text-dark rounded-xl outline-none text-xs font-bold bg-white"
+              className="w-full p-2 border-2 border-border-main rounded-xl outline-none text-xs font-bold bg-bg-main text-text-main"
               value={dbTierFilter}
               onChange={(e) => setDbTierFilter(e.target.value)}
             >
@@ -399,21 +381,21 @@ export default function AdminWaifus() {
             {filteredDbWaifus.map((waifu) => (
               <div
                 key={waifu.id}
-                className="flex items-center gap-3 p-2 bg-gray-50 border-2 border-text-dark/10 rounded-xl"
+                className="flex items-center gap-3 p-2 bg-bg-main border-2 border-border-main/10 rounded-xl"
               >
                 <img
                   src={waifu.image_url}
-                  className="w-14 h-14 rounded-lg object-cover border-2 border-text-dark"
+                  className="w-14 h-14 rounded-lg object-cover border-2 border-border-main"
                   alt=""
                 />
                 <div className="flex-1 min-w-0">
-                  <div className="font-black text-xs truncate uppercase">
+                  <div className="font-black text-xs truncate uppercase text-text-main">
                     {waifu.name}
                   </div>
                   {isEditing === waifu.id ? (
                     <select
                       autoFocus
-                      className="text-[0.65rem] font-bold border-b-2 border-primary-blue outline-none bg-transparent"
+                      className="text-[0.65rem] font-bold border-b-2 border-primary-blue outline-none bg-transparent text-text-main"
                       defaultValue={waifu.tier}
                       onChange={(e) => handleUpdateTier(waifu.id, e.target.value)}
                       onBlur={() => setIsEditing(null)}
@@ -451,7 +433,7 @@ export default function AdminWaifus() {
               </div>
             ))}
             {filteredDbWaifus.length === 0 && (
-              <p className="text-center text-xs opacity-50 italic">
+              <p className="text-center text-xs opacity-50 italic text-text-main">
                 Data tidak ditemukan.
               </p>
             )}

@@ -60,7 +60,7 @@ export default function Changelog() {
             {logs.map((log) => (
               <div
                 key={log.id}
-                className="card-neo bg-white flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-fade-in"
+                className="card-neo flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-fade-in"
               >
                 <div className="flex items-center gap-3">
                   <div

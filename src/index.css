@@ -1,48 +1,57 @@
 @import "tailwindcss";
 
-/* 1. Deklarasi Variabel Tema (Tailwind v4) */
 @theme {
-  --color-bg-light: #f8f9fa;
-  --color-card-bg: #ffffff;
+  --color-bg-main: var(--bg);
+  --color-card-bg: var(--card);
+  --color-text-main: var(--text);
+  --color-text-muted: var(--text-muted);
+  --color-border-main: var(--border);
+  
   --color-primary-blue: #3d5afe;
   --color-secondary-yellow: #ffea00;
-  --color-text-dark: #1a1a1a;
-  --color-text-muted: #6c757d;
   --color-danger: #ff1744;
 
   --font-sans: "Lexend", sans-serif;
 }
 
-/* 2. Global Styles & Utilities */
+:root {
+  --bg: #f8f9fa;
+  --card: #ffffff;
+  --text: #1a1a1a;
+  --text-muted: #6c757d;
+  --border: #1a1a1a;
+  --dot-color: #d1d1d1;
+}
+
+.dark {
+  --bg: #121212;
+  --card: #1e1e1e;
+  --text: #f8f9fa;
+  --text-muted: #a1a1a1;
+  --border: #f8f9fa;
+  --dot-color: #333333;
+}
+
 @layer base {
   body {
-    @apply bg-bg-light text-text-dark font-sans;
-    /* Pola background titik-titik khas MYBINI */
-    background-image: radial-gradient(#d1d1d1 1px, transparent 1px);
+    @apply bg-bg-main text-text-main font-sans transition-colors duration-300;
+    background-image: radial-gradient(var(--dot-color) 1px, transparent 1px);
     background-size: 20px 20px;
     padding-bottom: 100px;
-    /* Ruang untuk bottom nav */
     min-height: 100vh;
   }
 
-  h1,
-  h2,
-  h3 {
+  h1, h2, h3 {
     @apply font-extrabold leading-tight;
   }
 
-  /* 3. Custom Components (Clean Code Approach)
-    Daripada menulis class Tailwind yang sangat panjang berulang kali di JSX,
-    kita buat komponen CSS utilitas untuk elemen yang paling sering dipakai.
-  */
-
   .card-neo {
-    @apply bg-card-bg border-2 border-text-dark rounded-2xl p-6 relative;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    @apply bg-card-bg border-2 border-border-main rounded-2xl p-6 relative transition-all duration-300;
+    box-shadow: 4px 4px 0px var(--border);
   }
 
   .btn-neo {
-    @apply inline-flex items-center justify-center gap-2 w-full px-6 py-3 bg-primary-blue text-white border-2 border-text-dark rounded-xl font-semibold uppercase cursor-pointer transition-all duration-150;
+    @apply inline-flex items-center justify-center gap-2 w-full px-6 py-3 bg-primary-blue text-white border-2 border-border-main rounded-xl font-semibold uppercase cursor-pointer transition-all duration-150;
     box-shadow: 6px 6px 0px var(--color-secondary-yellow);
   }
 
@@ -52,7 +61,7 @@
   }
 
   .btn-neo-secondary {
-    @apply bg-secondary-yellow text-text-dark;
+    @apply bg-secondary-yellow text-[#1a1a1a];
     box-shadow: 6px 6px 0px var(--color-primary-blue);
   }
 
@@ -62,18 +71,22 @@
 
   .btn-neo-danger {
     @apply bg-danger text-white;
-    box-shadow: 6px 6px 0px var(--color-text-dark);
+    box-shadow: 6px 6px 0px var(--border);
   }
 
   .btn-neo-danger:active {
-    box-shadow: 3px 3px 0px var(--color-text-dark);
+    box-shadow: 3px 3px 0px var(--border);
   }
 
   .btn-neo:disabled {
     @apply opacity-60 cursor-not-allowed translate-x-0 translate-y-0 shadow-none;
   }
 
-  /* 4. Animations */
+  /* Input styles for dark mode compatibility */
+  input, select {
+    @apply bg-card-bg text-text-main border-border-main;
+  }
+
   @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }

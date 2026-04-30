@@ -1,4 +1,3 @@
-// Mapping warna tier langsung menggunakan utilitas Tailwind
 const tierColors = {
   C: 'bg-[#adb5bd] text-white',
   B: 'bg-[#51cf66] text-white',
@@ -6,7 +5,7 @@ const tierColors = {
   R: 'bg-[#cc5de8] text-white',
   S: 'bg-[#f06595] text-white',
   SR: 'bg-[#ff922b] text-white',
-  SSR: 'bg-[#fcc419] text-text-dark',
+  SSR: 'bg-[#fcc419] text-[#1a1a1a]',
   UR: 'bg-[#ff6b6b] text-white',
   LIMITED: 'bg-gradient-to-r from-[#ff6b6b] to-[#fcc419] text-white',
 };
@@ -15,10 +14,9 @@ export default function WaifuCard({ waifu, isInventory = false, onSell }) {
   const badgeColor = tierColors[waifu.tier] || tierColors.C;
 
   return (
-    <div className="p-3 border-2 border-text-dark rounded-xl bg-white text-center transition-transform duration-200 hover:-translate-y-1 relative">
-      {/* Badge Tier / Quantity */}
+    <div className="p-3 border-2 border-border-main rounded-xl bg-card-bg text-center transition-transform duration-200 hover:-translate-y-1 relative">
       <div
-        className={`absolute px-2 py-1 rounded-md text-[0.7rem] font-extrabold border border-text-dark z-10 ${badgeColor} ${isInventory ? 'top-[-5px] right-[-5px] rotate-[5deg]' : 'top-[10px] right-[10px]'}`}
+        className={`absolute px-2 py-1 rounded-md text-[0.7rem] font-extrabold border border-border-main z-10 ${badgeColor} ${isInventory ? 'top-[-5px] right-[-5px] rotate-[5deg]' : 'top-[10px] right-[10px]'}`}
       >
         {isInventory ? `x${waifu.total}` : waifu.tier}
       </div>
@@ -27,18 +25,17 @@ export default function WaifuCard({ waifu, isInventory = false, onSell }) {
         src={waifu.image_url}
         alt={waifu.name}
         loading="lazy"
-        className="w-full rounded-lg border border-text-dark aspect-square object-cover mb-2"
+        className="w-full rounded-lg border border-border-main aspect-square object-cover mb-2"
       />
 
-      <div className="text-xs font-black leading-[1.2] line-clamp-2">
+      <div className="text-xs font-black leading-[1.2] line-clamp-2 text-text-main">
         {waifu.name}
       </div>
 
-      {/* Footer Card menyesuaikan konteks (Inventory vs Pool biasa) */}
       {!isInventory ? (
         <div className="flex flex-col gap-1">
           {waifu.tier === 'LIMITED' && waifu.owner && (
-            <div className="text-[0.65rem] bg-text-dark text-secondary-yellow py-1 px-2 rounded-lg font-black uppercase">
+            <div className="text-[0.65rem] bg-border-main text-secondary-yellow py-1 px-2 rounded-lg font-black uppercase">
               <i className="fa-solid fa-crown mr-1"></i>
               {waifu.owner}
             </div>

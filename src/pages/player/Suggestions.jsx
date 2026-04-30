@@ -85,9 +85,9 @@ export default function Suggestions() {
   const getStatusStyle = (status) => {
     switch (status) {
       case 'approved':
-        return 'font-black border-text-dark';
+        return 'bg-primary-blue text-white font-black border-text-dark';
       case 'rejected':
-        return 'font-black border-text-dark';
+        return 'bg-danger text-white font-black border-text-dark';
       default:
         return 'bg-secondary-yellow text-text-dark border-text-dark';
     }
@@ -104,18 +104,16 @@ export default function Suggestions() {
           </p>
         </header>
 
-        {/* Form Saran */}
-        <div className="card-neo bg-white mb-8">
+        <div className="card-neo bg-card-bg mb-8">
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             {msg.text && (
               <div
-                className={`p-3 rounded-xl border-2 border-text-dark font-bold text-sm text-center ${msg.type === 'success' ? 'bg-success/20 text-success' : 'bg-danger/20 text-danger'}`}
+                className={`p-3 rounded-xl border-2 border-border-main font-bold text-sm text-center ${msg.type === 'success' ? 'bg-primary-blue/20 text-text-main' : 'bg-danger/20 text-danger'}`}
               >
                 {msg.text}
               </div>
             )}
 
-            {/* Pencarian Jikan */}
             {!selectedChar ? (
               <div className="flex flex-col gap-2">
                 <label className="font-extrabold text-sm uppercase">
@@ -143,22 +141,21 @@ export default function Suggestions() {
                   </button>
                 </div>
 
-                {/* Hasil Pencarian */}
                 {searchResults.length > 0 && (
-                  <div className="flex flex-col gap-2 mt-2 bg-gray-50 p-2 rounded-xl border-2 border-text-dark/10 max-h-48 overflow-y-auto">
+                  <div className="flex flex-col gap-2 mt-2 bg-bg-main p-2 rounded-xl border-2 border-border-main max-h-48 overflow-y-auto">
                     {searchResults.map((char) => (
                       <button
                         key={char.mal_id}
                         type="button"
                         onClick={() => setSelectedChar(char)}
-                        className="flex items-center gap-3 p-2 hover:bg-white rounded-lg transition-colors text-left border border-transparent hover:border-text-dark/20"
+                        className="flex items-center gap-3 p-2 hover:bg-primary-blue/20 rounded-lg transition-colors text-left border border-transparent hover:border-border-main"
                       >
                         <img
                           src={char.images.webp.small_image_url}
-                          className="w-10 h-10 rounded object-cover border border-text-dark"
+                          className="w-10 h-10 rounded object-cover border border-border-main"
                           alt=""
                         />
-                        <div className="text-[0.7rem] font-black">
+                        <div className="text-[0.7rem] font-black text-text-main">
                           {char.name}
                         </div>
                       </button>
@@ -167,19 +164,18 @@ export default function Suggestions() {
                 )}
               </div>
             ) : (
-              /* Preview Karakter Terpilih */
-              <div className="bg-primary-blue/5 p-4 rounded-2xl border-2 border-dashed border-primary-blue flex items-center justify-between">
+              <div className="card-neo bg-card-bg p-4 rounded-2xl border-2 border-dashed border-primary-blue flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <img
                     src={selectedChar.images.webp.image_url}
-                    className="w-16 h-16 rounded-xl border-2 border-text-dark object-cover"
+                    className="w-16 h-16 rounded-xl border-2 border-border-main object-cover"
                     alt=""
                   />
                   <div>
-                    <div className="font-black text-sm">
+                    <div className="text-text-main text-sm font-bold">
                       {selectedChar.name}
                     </div>
-                    <div className="text-[0.6rem] opacity-50">
+                    <div className="text-text-main text-[0.6rem] opacity-50">
                       ID: {selectedChar.mal_id}
                     </div>
                   </div>
@@ -201,7 +197,7 @@ export default function Suggestions() {
               <select
                 value={suggestedTier}
                 onChange={(e) => setSuggestedTier(e.target.value)}
-                className="w-full p-3 border-2 border-text-dark rounded-xl mt-1 outline-none font-sans font-bold bg-white cursor-pointer"
+                className="w-full p-3 border-2 border-border-main rounded-xl mt-1 outline-none font-sans font-bold bg-card-bg cursor-pointer"
               >
                 <option value="C">Tier C (Common)</option>
                 <option value="B">Tier B (Uncommon)</option>
@@ -231,7 +227,7 @@ export default function Suggestions() {
         </div>
 
         {/* Daftar Saran Saya */}
-        <h3 className="text-sm font-black mb-4 border-b-2 border-text-dark pb-1 uppercase italic inline-block">
+        <h3 className="text-sm font-black mb-4 border-b-2 border-border-main pb-1 uppercase italic inline-block">
           Riwayat Saran Anda
         </h3>
 
@@ -239,27 +235,29 @@ export default function Suggestions() {
           {mySuggestions.map((s) => (
             <div
               key={s.id}
-              className="card-neo bg-white p-3 flex justify-between items-center animate-fade-in"
+              className="card-neo bg-card-bg p-4 flex flex-col gap-3 relative"
             >
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-4">
                 <img
                   src={s.image_url}
-                  className="w-10 h-10 rounded border border-text-dark object-cover"
+                  className="w-12 h-12 rounded-lg border-2 border-border-main object-cover"
                   alt=""
                 />
-                <div>
-                  <div className="font-black text-xs leading-tight">
+                <div className="flex-1">
+                  <div className="text-text-main font-bold leading-tight">
                     {s.waifu_name}
                   </div>
-                  <div className="text-[0.6rem] font-bold text-primary-blue">
-                    Saran: Tier {s.suggested_tier}
+                  <div className="flex items-center gap-2 mt-1">
+                    <span
+                      className={`px-2 py-0.5 rounded text-[0.6rem] border-2 uppercase ${getStatusStyle(s.status)}`}
+                    >
+                      {s.status}
+                    </span>
+                    <span className="bg-border-main text-card-bg px-2 py-0.5 rounded text-[0.6rem] font-bold">
+                      Tier {s.suggested_tier}
+                    </span>
                   </div>
                 </div>
-              </div>
-              <div
-                className={`px-3 py-1 rounded-full text-[0.55rem] font-black uppercase border-2 ${getStatusStyle(s.status)} shadow-[2px_2px_0px_#1a1a1a]`}
-              >
-                {s.status}
               </div>
             </div>
           ))}

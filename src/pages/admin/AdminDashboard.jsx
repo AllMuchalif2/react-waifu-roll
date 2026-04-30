@@ -17,12 +17,10 @@ export default function AdminDashboard() {
 
   const fetchStats = async () => {
     setLoading(true);
-    // 1. Hitung total pemain
     const { count: playersCount } = await supabase
       .from('profiles')
       .select('*', { count: 'exact', head: true });
 
-    // 2. Ambil semua waifu untuk hitung total & per tier
     const { data: waifus } = await supabase.from('waifu_pool').select('tier');
 
     if (waifus) {
@@ -61,7 +59,6 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Stats Grid */}
         <div className="grid grid-cols-2 gap-4 mb-6">
           <div className="card-neo bg-primary-blue text-white p-4">
             <div className="text-3xl font-black mb-1">
@@ -72,16 +69,15 @@ export default function AdminDashboard() {
             </div>
           </div>
           <div className="card-neo bg-secondary-yellow text-text-dark p-4">
-            <div className="text-3xl font-black mb-1">
+            <div className="text-3xl text-black mb-1">
               {loading ? '...' : stats.totalWaifus}
             </div>
-            <div className="text-[0.6rem] font-bold uppercase tracking-wider opacity-80">
+            <div className="text-[0.6rem] text-black font-bold uppercase tracking-wider opacity-80">
               Total Waifus
             </div>
           </div>
         </div>
 
-        {/* Tier Stats */}
         <div className="card-neo mb-6">
           <h3 className="text-sm font-black mb-4 flex items-center gap-2">
             <i className="fa-solid fa-chart-pie text-primary-blue"></i>
@@ -92,7 +88,7 @@ export default function AdminDashboard() {
               (tier) => (
                 <div
                   key={tier}
-                  className="bg-gray-100 p-2 rounded-lg border-2 border-text-dark/10 flex flex-col items-center"
+                  className="bg-main p-2 rounded-lg border-2 border-text-dark/10 flex flex-col items-center"
                 >
                   <span className="text-[0.6rem] font-black text-primary-blue">
                     {tier}

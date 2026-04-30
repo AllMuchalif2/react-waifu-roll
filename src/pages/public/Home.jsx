@@ -6,7 +6,6 @@ import { animate as anime, stagger } from 'animejs';
 
 export default function Home() {
   useEffect(() => {
-    // Animasi Masuk: Menggunakan standar v4 seperti di Gacha.jsx
     anime(
       '.stagger-item',
       {
@@ -21,7 +20,6 @@ export default function Home() {
       },
     );
 
-    // Animasi Floating
     anime(
       '.floating',
       {
@@ -53,9 +51,11 @@ export default function Home() {
             </div>
           </div>
 
-          <h1 className="text-4xl font-black italic uppercase tracking-tighter leading-none mb-4 drop-shadow-[4px_4px_0px_rgba(0,0,0,0.1)]">
-            <span className="text-primary-blue">MY</span>BINI <br />
-            <span className="text-2xl opacity-50">WAIFU GACHA</span>
+          <h1 className="text-4xl text-black italic uppercase tracking-tighter leading-none mb-4 drop-shadow-[4px_4px_0px_rgba(0,0,0,0.1)]">
+            <span className="text-primary-blue">MYBINI</span> <br />
+            <span className="text-text-main text-2xl opacity-50">
+              GACHA WAIFU
+            </span>
           </h1>
 
           <p className="text-sm font-bold text-text-muted leading-relaxed max-w-[280px] mb-8">
@@ -79,10 +79,10 @@ export default function Home() {
                 <i className="fa-solid fa-heart text-danger"></i>
               </div>
               <div className="flex-1">
-                <h3 className="font-black uppercase text-sm italic">
+                <h3 className="text-black uppercase text-sm italic">
                   Koleksi Luas
                 </h3>
-                <p className="text-[0.65rem] font-bold opacity-70">
+                <p className="text-black text-[0.65rem] font-bold opacity-70">
                   Ratusan karakter dari berbagai anime populer.
                 </p>
               </div>
@@ -95,10 +95,10 @@ export default function Home() {
                 <i className="fa-solid fa-trophy text-secondary-yellow"></i>
               </div>
               <div className="flex-1">
-                <h3 className="font-black uppercase text-sm italic">
+                <h3 className="text-black uppercase text-sm italic">
                   Sistem Rank
                 </h3>
-                <p className="text-[0.65rem] font-bold opacity-80">
+                <p className="text-black text-[0.65rem] font-bold opacity-80">
                   Bersaing dengan pemain lain untuk koleksi terbaik.
                 </p>
               </div>
@@ -111,10 +111,10 @@ export default function Home() {
                 <i className="fa-solid fa-clock-rotate-left text-primary-blue"></i>
               </div>
               <div className="flex-1">
-                <h3 className="font-black uppercase text-sm italic">
+                <h3 className="text-black uppercase text-sm italic">
                   Update Rutin
                 </h3>
-                <p className="text-[0.65rem] font-bold opacity-60">
+                <p className="text-black text-[0.65rem] font-bold opacity-60">
                   Daftar waifu di pool selalu diperbarui tiap minggu.
                 </p>
               </div>
@@ -125,10 +125,10 @@ export default function Home() {
         {/* CTA SECTION */}
         <section className="stagger-item card-neo bg-text-dark text-white p-8 text-center relative overflow-hidden">
           <div className="absolute top-0 right-0 w-24 h-24 bg-primary-blue opacity-20 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl"></div>
-          <h2 className="text-xl font-black italic uppercase mb-3">
+          <h2 className="text-xl text-text-main italic uppercase mb-3">
             Siap Menjadi Legend?
           </h2>
-          <p className="text-xs opacity-70 mb-6 font-bold">
+          <p className="text-xs text-text-main opacity-70 mb-6 font-bold">
             Dapatkan waifu LIMITED 1/1 dan tunjukkan pada dunia!
           </p>
           <div className="flex flex-col gap-3">
@@ -140,7 +140,7 @@ export default function Home() {
             </Link>
             <Link
               to="/rank"
-              className="btn-neo bg-white text-text-dark no-underline py-3 text-xs"
+              className="btn-neo btn-neo-primary no-underline py-3 text-xs"
             >
               <i className="fa-solid fa-medal mr-2"></i> CEK SCOREBOARD
             </Link>
@@ -149,7 +149,7 @@ export default function Home() {
 
         {/* FOOTER */}
         <footer className="stagger-item text-center mt-4">
-          <p className="text-[0.7rem] font-black uppercase tracking-widest text-text-dark/40">
+          <p className="text-[0.7rem] text-text-main uppercase tracking-widest">
             &copy; 2026 MYBINI - IG:{' '}
             <a
               href="https://instagram.com/allmuchalif2"
