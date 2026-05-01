@@ -31,13 +31,14 @@ import AdminWaifus from './pages/admin/AdminWaifus';
 import AdminSuggestions from './pages/admin/AdminSuggestions';
 import GachaSimulator from './pages/admin/GachaSimulator';
 import AdminSettings from './pages/admin/Settings';
+import RickRedirect from './components/RickRedirect';
 import AdminRoute from './components/AdminRoute';
 
 export default function App() {
   return (
     <ErrorBoundary>
       <ThemeProvider>
-        <Toaster 
+        <Toaster
           position="top-center"
           toastOptions={{
             style: {
@@ -53,75 +54,76 @@ export default function App() {
         />
         <AuthProvider>
           <Router>
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/" element={<Home />} />
-            <Route path="/waifus" element={<Waifus />} />
-            <Route path="/rank" element={<Rank />} />
-            <Route path="/changelog" element={<Changelog />} />
+            <Routes>
+              {/* Public Routes */}
+              <Route path="/" element={<Home />} />
+              <Route path="/waifus" element={<Waifus />} />
+              <Route path="/rank" element={<Rank />} />
+              <Route path="/changelog" element={<Changelog />} />
+              <Route path="/free" element={<RickRedirect />} />
 
-            {/* Auth Routes */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/admin-login" element={<AdminLogin />} />
+              {/* Auth Routes */}
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/admin-login" element={<AdminLogin />} />
 
-            {/* Player Routes (Sudah ada proteksi di dalam komponen) */}
-            <Route path="/dashboard" element={<PlayerDashboard />} />
-            <Route path="/gacha" element={<Gacha />} />
-            <Route path="/history" element={<History />} />
-            <Route path="/suggestions" element={<Suggestions />} />
-            <Route path="/album" element={<Album />} />
+              {/* Player Routes (Sudah ada proteksi di dalam komponen) */}
+              <Route path="/dashboard" element={<PlayerDashboard />} />
+              <Route path="/gacha" element={<Gacha />} />
+              <Route path="/history" element={<History />} />
+              <Route path="/suggestions" element={<Suggestions />} />
+              <Route path="/album" element={<Album />} />
 
-            {/* Admin Routes (Proteksi Level Route) */}
-            <Route
-              path="/admin"
-              element={
-                <AdminRoute>
-                  <AdminDashboard />
-                </AdminRoute>
-              }
-            />
-            <Route
-              path="/admin/waifus"
-              element={
-                <AdminRoute>
-                  <AdminWaifus />
-                </AdminRoute>
-              }
-            />
-            <Route
-              path="/admin/suggestions"
-              element={
-                <AdminRoute>
-                  <AdminSuggestions />
-                </AdminRoute>
-              }
-            />
-            <Route
-              path="/admin/simulator"
-              element={
-                <AdminRoute>
-                  <GachaSimulator />
-                </AdminRoute>
-              }
-            />
-            <Route
-              path="/admin/settings"
-              element={
-                <AdminRoute>
-                  <AdminSettings />
-                </AdminRoute>
-              }
-            />
+              {/* Admin Routes (Proteksi Level Route) */}
+              <Route
+                path="/admin"
+                element={
+                  <AdminRoute>
+                    <AdminDashboard />
+                  </AdminRoute>
+                }
+              />
+              <Route
+                path="/admin/waifus"
+                element={
+                  <AdminRoute>
+                    <AdminWaifus />
+                  </AdminRoute>
+                }
+              />
+              <Route
+                path="/admin/suggestions"
+                element={
+                  <AdminRoute>
+                    <AdminSuggestions />
+                  </AdminRoute>
+                }
+              />
+              <Route
+                path="/admin/simulator"
+                element={
+                  <AdminRoute>
+                    <GachaSimulator />
+                  </AdminRoute>
+                }
+              />
+              <Route
+                path="/admin/settings"
+                element={
+                  <AdminRoute>
+                    <AdminSettings />
+                  </AdminRoute>
+                }
+              />
 
-            {/* Catch-all 404 Route */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Router>
-      </AuthProvider>
-    </ThemeProvider>
+              {/* Catch-all 404 Route */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Router>
+        </AuthProvider>
+      </ThemeProvider>
     </ErrorBoundary>
   );
 }
