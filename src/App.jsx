@@ -26,6 +26,7 @@ import AdminLogin from './pages/auth/AdminLogin';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminWaifus from './pages/admin/AdminWaifus';
 import AdminSuggestions from './pages/admin/AdminSuggestions';
+import GachaSimulator from './pages/admin/GachaSimulator';
 import AdminRoute from './components/AdminRoute';
 
 export default function App() {
@@ -76,6 +77,14 @@ export default function App() {
               element={
                 <AdminRoute>
                   <AdminSuggestions />
+                </AdminRoute>
+              }
+            />
+            <Route
+              path="/admin/simulator"
+              element={
+                <AdminRoute>
+                  <GachaSimulator />
                 </AdminRoute>
               }
             />

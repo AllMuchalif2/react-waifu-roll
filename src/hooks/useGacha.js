@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase';
 import { DROP_RATES } from '../config/gachaConfig';
 
 const SUCCESS_AUDIO_URL = 'https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3';
+const LIMITED_AUDIO_URL = 'https://assets.mixkit.co/active_storage/sfx/2018/2018-preview.mp3';
 
 export function useGacha(user, profile, fetchProfile) {
   const [isFetching, setIsFetching] = useState(false);
@@ -119,7 +120,9 @@ export function useGacha(user, profile, fetchProfile) {
       else if (bestWaifu.tier === 'LIMITED') setFlashClass('flash-limited');
 
       if (hasHighTier) {
-        const audio = new Audio(SUCCESS_AUDIO_URL);
+        const hasLimited = results.some(r => r.tier === 'LIMITED');
+        const audioUrl = hasLimited ? LIMITED_AUDIO_URL : SUCCESS_AUDIO_URL;
+        const audio = new Audio(audioUrl);
         audio.volume = 0.5;
         audio.play().catch((e) => console.log('Audio play error:', e));
       }

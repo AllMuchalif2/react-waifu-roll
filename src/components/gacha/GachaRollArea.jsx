@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import WaifuCard from '../WaifuCard';
+import { TIER_CONFIG } from '../../config/tierConfig';
 
 export default function GachaRollArea({ 
   isFetching, 
@@ -46,19 +47,22 @@ export default function GachaRollArea({
             </h3>
             
             {isMultiple ? (
-              <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
-                {result.map((waifu, idx) => (
-                  <div key={idx} className="relative group animate-fade-in" style={{ animationDelay: `${idx * 50}ms` }}>
-                    <div className="border-2 border-border-main rounded-lg overflow-hidden bg-white shadow-[2px_2px_0px_var(--border)]">
-                      <img src={waifu.image_url} alt={waifu.name} className="w-full aspect-square object-cover" />
-                      <div className={`absolute top-0 right-0 px-1 rounded-bl-lg text-[0.5rem] font-black border-l border-b border-border-main ${
-                        waifu.tier === 'SSR' || waifu.tier === 'UR' || waifu.tier === 'LIMITED' ? 'bg-secondary-yellow text-black' : 'bg-white text-black'
-                      }`}>
-                        {waifu.tier}
+              <div className="grid grid-cols-5 gap-1.5">
+                {result.map((waifu, idx) => {
+                  const style = TIER_CONFIG[waifu.tier] || TIER_CONFIG.C;
+                  const isHighTier = ['SSR', 'UR', 'LIMITED'].includes(waifu.tier);
+                  
+                  return (
+                    <div key={idx} className="relative group animate-fade-in" style={{ animationDelay: `${idx * 50}ms` }}>
+                      <div className={`border rounded-md overflow-hidden bg-white transition-transform hover:scale-105 shadow-[1px_1px_0px_#1a1a1a] ${isHighTier ? 'border-primary-blue' : 'border-border-main'}`}>
+                        <img src={waifu.image_url} alt={waifu.name} className="w-full aspect-square object-cover" />
+                        <div className={`absolute top-0 right-0 px-1 rounded-bl-md text-[0.55rem] font-black border-l border-b border-border-main ${style.color} ${style.textColor}`}>
+                          {waifu.tier}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             ) : (
               <WaifuCard waifu={result} />

@@ -102,6 +102,26 @@ export default function AdminDashboard() {
           </div>
         </div>
 
+        <Link
+          to="/admin/simulator"
+          className="card-neo mb-6 bg-text-dark text-white p-4 no-underline flex items-center justify-between group hover:bg-black transition-colors"
+        >
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center border-2 border-white/20 text-white">
+              <i className="fa-solid fa-vial text-2xl"></i>
+            </div>
+            <div>
+              <h3 className="text-sm font-black uppercase italic">
+                Gacha Simulator
+              </h3>
+              <p className="text-[0.6rem] font-bold opacity-60 uppercase">
+                Test Animasi & Efek Gacha
+              </p>
+            </div>
+          </div>
+          <i className="fa-solid fa-chevron-right group-hover:translate-x-1 transition-transform"></i>
+        </Link>
+
         <div className="flex flex-col gap-3 mt-8">
           <Link
             to="/dashboard"
