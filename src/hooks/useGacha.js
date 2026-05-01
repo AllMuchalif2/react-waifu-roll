@@ -21,9 +21,9 @@ export function useGacha(user, profile, fetchProfile) {
     return 'C';
   };
 
-  const handleRoll = async () => {
-    if (profile.dice_count < 1) {
-      setMsg('Dadu tidak cukup! Silakan klaim harian atau beli.');
+  const handleRoll = async (count = 1) => {
+    if (profile.dice_count < count) {
+      setMsg(`Dadu tidak cukup! Butuh ${count} dadu.`);
       return;
     }
 
@@ -34,69 +34,74 @@ export function useGacha(user, profile, fetchProfile) {
     setFlashClass('');
 
     try {
+      // Potong dadu sekaligus
       await supabase
         .from('profiles')
-        .update({ dice_count: profile.dice_count - 1 })
+        .update({ dice_count: profile.dice_count - count })
         .eq('id', user.id);
       fetchProfile(user.id);
 
-      let selectedTier = getRandomTier();
+      const results = [];
+      const userWaifusToInsert = [];
+      const gachaHistoryToInsert = [];
 
-      let { data: poolItems } = await supabase
-        .from('waifu_pool')
-        .select('*, user_waifus(id)')
-        .eq('tier', selectedTier);
-
-      if (selectedTier === 'LIMITED') {
-        poolItems = poolItems.filter((item) => item.user_waifus.length === 0);
-      }
-
-      if (!poolItems || poolItems.length === 0) {
-        const { data: allAvailable } = await supabase
+      // Loop untuk setiap roll
+      for (let i = 0; i < count; i++) {
+        let selectedTier = getRandomTier();
+        
+        // Ambil item dari pool (bisa dioptimasi dengan ambil semua pool dulu, tapi untuk kesederhanaan tetap per tier)
+        let { data: poolItems } = await supabase
           .from('waifu_pool')
-          .select('*, user_waifus(id)');
+          .select('*, user_waifus(id)')
+          .eq('tier', selectedTier);
 
-        if (!allAvailable || allAvailable.length === 0) {
-          throw new Error('Maaf, mesin gacha sedang kosong!');
+        if (selectedTier === 'LIMITED') {
+          poolItems = poolItems.filter((item) => item.user_waifus.length === 0);
         }
 
-        poolItems = allAvailable.filter((item) => {
-          if (item.tier === 'LIMITED' && item.user_waifus.length > 0)
-            return false;
-          return true;
-        });
+        if (!poolItems || poolItems.length === 0) {
+          const { data: allAvailable } = await supabase
+            .from('waifu_pool')
+            .select('*, user_waifus(id)');
 
-        if (poolItems.length === 0) {
-          throw new Error(
-            'Wah! Semua waifu LIMITED sudah habis dimiliki pemain lain.',
-          );
+          poolItems = allAvailable.filter((item) => {
+            if (item.tier === 'LIMITED' && item.user_waifus.length > 0) return false;
+            return true;
+          });
+        }
+
+        if (poolItems && poolItems.length > 0) {
+          const randomWaifu = poolItems[Math.floor(Math.random() * poolItems.length)];
+          results.push(randomWaifu);
+          userWaifusToInsert.push({ user_id: user.id, waifu_id: randomWaifu.id });
+          gachaHistoryToInsert.push({ user_id: user.id, waifu_id: randomWaifu.id });
         }
       }
 
-      const randomWaifu =
-        poolItems[Math.floor(Math.random() * poolItems.length)];
-
-      await supabase
-        .from('user_waifus')
-        .insert([{ user_id: user.id, waifu_id: randomWaifu.id }]);
-
-      await supabase
-        .from('gacha_history')
-        .insert([{ user_id: user.id, waifu_id: randomWaifu.id }]);
+      if (results.length > 0) {
+        // Batch insert
+        await supabase.from('user_waifus').insert(userWaifusToInsert);
+        await supabase.from('gacha_history').insert(gachaHistoryToInsert);
+      }
 
       await new Promise((resolve) => setTimeout(resolve, 800));
 
       setIsFetching(false);
-      setResult(randomWaifu);
+      setResult(count === 1 ? results[0] : results);
 
-      if (randomWaifu.tier === 'SSR') setFlashClass('flash-ssr');
-      else if (randomWaifu.tier === 'UR') setFlashClass('flash-ur');
-      else if (randomWaifu.tier === 'LIMITED') setFlashClass('flash-limited');
+      // Flash & Sound (Hanya jika dapat SSR/UR/LIMITED di salah satu roll)
+      const hasHighTier = results.some(r => ['SSR', 'UR', 'LIMITED'].includes(r.tier));
+      const bestWaifu = [...results].sort((a, b) => {
+        const tiers = ['LIMITED', 'UR', 'SSR', 'SR', 'S', 'R', 'A', 'B', 'C'];
+        return tiers.indexOf(a.tier) - tiers.indexOf(b.tier);
+      })[0];
 
-      if (['SSR', 'UR', 'LIMITED'].includes(randomWaifu.tier)) {
-        const audio = new Audio(
-          'https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3',
-        );
+      if (bestWaifu.tier === 'SSR') setFlashClass('flash-ssr');
+      else if (bestWaifu.tier === 'UR') setFlashClass('flash-ur');
+      else if (bestWaifu.tier === 'LIMITED') setFlashClass('flash-limited');
+
+      if (hasHighTier) {
+        const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3');
         audio.volume = 0.5;
         audio.play().catch((e) => console.log('Audio play error:', e));
       }
