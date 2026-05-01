@@ -24,7 +24,6 @@ export default function PlayerDashboard() {
 
   const {
     loading,
-    claimMsg,
     search,
     setSearch,
     tierFilter,
@@ -80,7 +79,6 @@ export default function PlayerDashboard() {
             profile={profile}
             onBuyDice={() => setIsBuyingDice(true)}
             onDailyClaim={handleDailyClaim}
-            claimMsg={claimMsg}
           />
         </div>
 

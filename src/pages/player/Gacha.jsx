@@ -19,12 +19,10 @@ export default function Gacha() {
     countdown,
     flashClass,
     result,
-    msg,
     showRates,
     setShowRates,
     handleRoll,
   } = useGacha(user, profile, fetchProfile);
-
   useEffect(() => {
     if (!authLoading && !user) navigate('/login');
   }, [user, authLoading, navigate]);
@@ -55,9 +53,6 @@ export default function Gacha() {
           onClose={() => setShowRates(false)}
         />
 
-        {msg && (
-          <div className="mb-4 text-danger font-bold animate-pulse">{msg}</div>
-        )}
 
         <GachaRollArea
           isFetching={isFetching}

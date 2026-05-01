@@ -9,6 +9,18 @@ export default function Rank() {
 
   useEffect(() => {
     fetchLeaders();
+
+    // Subscribe to real-time changes in profiles table
+    const subscription = supabase
+      .channel('public:profiles')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => {
+        fetchLeaders();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(subscription);
+    };
   }, []);
 
   const fetchLeaders = async () => {

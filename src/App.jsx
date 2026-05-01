@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import ErrorBoundary from './components/ErrorBoundary';
+import { Toaster } from 'react-hot-toast';
 
 // Public Pages
 import Home from './pages/public/Home';
@@ -20,6 +21,7 @@ import Gacha from './pages/player/Gacha';
 import History from './pages/player/History';
 import Rank from './pages/player/Rank';
 import Suggestions from './pages/player/Suggestions';
+import Album from './pages/player/Album';
 
 // Admin Pages
 import AdminLogin from './pages/auth/AdminLogin';
@@ -33,6 +35,20 @@ export default function App() {
   return (
     <ErrorBoundary>
       <ThemeProvider>
+        <Toaster 
+          position="top-center"
+          toastOptions={{
+            style: {
+              border: '2px solid #1a1a1a',
+              padding: '16px',
+              color: '#1a1a1a',
+              fontWeight: '900',
+              borderRadius: '12px',
+              boxShadow: '4px 4px 0px #1a1a1a',
+              background: '#fff',
+            },
+          }}
+        />
         <AuthProvider>
           <Router>
           <Routes>
@@ -54,6 +70,7 @@ export default function App() {
             <Route path="/gacha" element={<Gacha />} />
             <Route path="/history" element={<History />} />
             <Route path="/suggestions" element={<Suggestions />} />
+            <Route path="/album" element={<Album />} />
 
             {/* Admin Routes (Proteksi Level Route) */}
             <Route

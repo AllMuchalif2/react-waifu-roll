@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 import { PRICE_MAP, DICE_PRICE } from '../config/gachaConfig';
+import { toast } from 'react-hot-toast';
 
 export function useDashboardData(user, profile, fetchProfile) {
   const [inventory, setInventory] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [claimMsg, setClaimMsg] = useState('');
   const [search, setSearch] = useState('');
   const [tierFilter, setTierFilter] = useState('');
   const [sellingWaifu, setSellingWaifu] = useState(null);
@@ -57,57 +57,38 @@ export function useDashboardData(user, profile, fetchProfile) {
 
   const handleDailyClaim = async () => {
     try {
-      const today = new Date().toISOString().split('T')[0];
-      if (profile.last_daily_claim === today) {
-        setClaimMsg('Anda sudah klaim hadiah hari ini!');
-        if (claimTimerRef.current) clearTimeout(claimTimerRef.current);
-        claimTimerRef.current = setTimeout(() => setClaimMsg(''), 3000);
-        return;
-      }
+      // Panggil Database Function (RPC) - AMAN
+      const { data, error: rpcError } = await supabase.rpc('claim_daily_secure');
 
-      const newDice = (profile.dice_count || 0) + 10;
-      const { error } = await supabase
-        .from('profiles')
-        .update({ dice_count: newDice, last_daily_claim: today })
-        .eq('id', user.id);
+      if (rpcError) throw new Error(rpcError.message || "Gagal klaim hadiah.");
 
-      if (error) throw error;
-
-      setClaimMsg('+10 Dadu Berhasil Diklaim!');
+      toast.success(data.message || '+10 Dadu Berhasil Diklaim!');
       await fetchProfile(user.id);
-      if (claimTimerRef.current) clearTimeout(claimTimerRef.current);
-      claimTimerRef.current = setTimeout(() => setClaimMsg(''), 3000);
     } catch (err) {
-      setClaimMsg('Gagal klaim harian.');
+      toast.error(err.message || 'Gagal klaim harian.');
       console.error(err);
     }
   };
 
   const confirmBuyDice = async () => {
-    const totalCost = buyAmount * DICE_PRICE;
-    if (profile.coins < totalCost) {
-      return { error: 'Koin tidak cukup!' };
-    }
-
     try {
       setLoading(true);
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          coins: profile.coins - totalCost,
-          dice_count: profile.dice_count + buyAmount,
-        })
-        .eq('id', user.id);
+      // Panggil Database Function (RPC) - AMAN & ANTI-CHEAT
+      const { data, error } = await supabase.rpc('buy_dice_secure', { 
+        amount: buyAmount 
+      });
 
-      if (error) throw error;
+      if (error) throw new Error(error.message || 'Gagal membeli dadu.');
 
+      toast.success(`Berhasil membeli ${buyAmount} dadu!`);
       await fetchProfile(user.id);
       setIsBuyingDice(false);
       setBuyAmount(1);
       return { error: null };
     } catch (err) {
       console.error(err);
-      return { error: 'Gagal membeli dadu.' };
+      toast.error(err.message || 'Gagal membeli dadu.');
+      return { error: err.message };
     } finally {
       setLoading(false);
     }
@@ -125,24 +106,22 @@ export function useDashboardData(user, profile, fetchProfile) {
       setLoading(true);
       const finalAmount = Math.min(sellAmount, sellingWaifu.total);
       const idsToSell = sellingWaifu.instanceIds.slice(0, finalAmount);
-      const pricePerUnit = PRICE_MAP[sellingWaifu.tier] || 10;
-      const totalPrice = pricePerUnit * finalAmount;
 
-      const { error: delError } = await supabase.from('user_waifus').delete().in('id', idsToSell);
-      if (delError) throw delError;
+      // Panggil Database Function (RPC) - AMAN & ANTI-CHEAT
+      const { data, error: rpcError } = await supabase.rpc('sell_waifus_secure', { 
+        instance_ids: idsToSell 
+      });
 
-      const { error: updError } = await supabase
-        .from('profiles')
-        .update({ coins: (profile.coins || 0) + totalPrice })
-        .eq('id', user.id);
+      if (rpcError) throw new Error(rpcError.message || "Gagal menjual waifu.");
+
+      toast.success(`Berhasil menjual waifu! +${data.earned} koin.`);
       
-      if (updError) throw updError;
-
       await fetchProfile(user.id);
       await fetchInventory();
       setSellingWaifu(null);
     } catch (err) {
       console.error("Sell error:", err);
+      toast.error(err.message || "Gagal menjual.");
     } finally {
       setLoading(false);
     }
@@ -180,18 +159,17 @@ export function useDashboardData(user, profile, fetchProfile) {
 
     try {
       setLoading(true);
-      const { totalEarned, allIdsToSell } = calculateBulkSellInfo();
+      const { allIdsToSell } = calculateBulkSellInfo();
 
       if (allIdsToSell.length > 0) {
-        const { error: delError } = await supabase.from('user_waifus').delete().in('id', allIdsToSell);
-        if (delError) throw delError;
+        // Panggil Database Function (RPC) - AMAN & ANTI-CHEAT
+        const { data, error: rpcError } = await supabase.rpc('sell_waifus_secure', { 
+          instance_ids: allIdsToSell 
+        });
 
-        const { error: updError } = await supabase
-          .from('profiles')
-          .update({ coins: (profile.coins || 0) + totalEarned })
-          .eq('id', user.id);
-        
-        if (updError) throw updError;
+        if (rpcError) throw new Error(rpcError.message || "Gagal menjual waifu massal.");
+
+        toast.success(`Berhasil menjual ${allIdsToSell.length} waifu! +${data.earned} koin.`);
       }
 
       await fetchProfile(user.id);
@@ -199,6 +177,7 @@ export function useDashboardData(user, profile, fetchProfile) {
       setSelectedPoolIds([]);
     } catch (err) {
       console.error("Bulk sell error:", err);
+      toast.error(err.message || "Gagal menjual massal.");
     } finally {
       setLoading(false);
     }
@@ -213,7 +192,6 @@ export function useDashboardData(user, profile, fetchProfile) {
   return {
     inventory,
     loading,
-    claimMsg,
     search,
     setSearch,
     tierFilter,

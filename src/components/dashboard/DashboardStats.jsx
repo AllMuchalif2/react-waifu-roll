@@ -1,4 +1,4 @@
-export default function DashboardStats({ profile, onBuyDice, onDailyClaim, claimMsg }) {
+export default function DashboardStats({ profile, onBuyDice, onDailyClaim }) {
   const today = new Date().toISOString().split('T')[0];
 
   return (
@@ -43,11 +43,6 @@ export default function DashboardStats({ profile, onBuyDice, onDailyClaim, claim
         )}
       </div>
 
-      {claimMsg && (
-        <div className="text-center text-sm font-bold text-secondary-yellow mt-2 animate-bounce">
-          {claimMsg}
-        </div>
-      )}
     </>
   );
 }
