@@ -1,14 +1,4 @@
-const tierColors = {
-  C: 'bg-[#adb5bd] text-white',
-  B: 'bg-[#51cf66] text-white',
-  A: 'bg-[#339af0] text-white',
-  R: 'bg-[#cc5de8] text-white',
-  S: 'bg-[#f06595] text-white',
-  SR: 'bg-[#ff922b] text-white',
-  SSR: 'bg-[#fcc419] text-[#1a1a1a]',
-  UR: 'bg-[#ff6b6b] text-white',
-  LIMITED: 'bg-gradient-to-r from-[#ff6b6b] to-[#fcc419] text-white',
-};
+import { TIER_CONFIG } from '../config/tierConfig';
 
 export default function WaifuCard({ 
   waifu, 
@@ -18,7 +8,10 @@ export default function WaifuCard({
   isSelected = false,
   onToggleSelection 
 }) {
-  const badgeColor = tierColors[waifu.tier] || tierColors.C;
+  if (!waifu) return null;
+
+  const tierStyle = TIER_CONFIG[waifu.tier] || TIER_CONFIG.C;
+  const badgeColor = `${tierStyle.color} ${tierStyle.textColor}`;
 
   const handleClick = () => {
     if (isSelectionMode && onToggleSelection) {

@@ -12,16 +12,18 @@ export default function Rank() {
   }, []);
 
   const fetchLeaders = async () => {
+    setLoading(true);
     const { data } = await supabase
       .from('profiles')
-      .select('username, coins, user_waifus(count)')
-      .order('coins', { ascending: false })
+      .select('username, total_points, user_waifus(count)')
+      .order('total_points', { ascending: false })
       .limit(10);
 
     if (data) {
       const formatted = data.map((item) => ({
-        ...item,
-        waifu_count: item.user_waifus[0]?.count || 0,
+        username: item.username,
+        totalPoints: item.total_points || 0,
+        waifuCount: item.user_waifus[0]?.count || 0,
       }));
       setLeaders(formatted);
     }
@@ -51,7 +53,7 @@ export default function Rank() {
                   <th className="p-3">#</th>
                   <th className="p-3">User</th>
                   <th className="p-3 text-center">Waifu</th>
-                  <th className="p-3 text-right">Koin</th>
+                  <th className="p-3 text-right">Poin</th>
                 </tr>
               </thead>
               <tbody>
@@ -66,13 +68,13 @@ export default function Rank() {
                     </td>
                     <td className="p-3 text-center">
                       <span className="bg-text-dark text-text-main px-2 py-0.5 rounded-full text-[0.6rem]">
-                        {player.waifu_count}
+                        {player.waifuCount}
                       </span>
                     </td>
                     <td className="p-3 text-right">
                       <div className="flex items-center justify-end gap-1">
-                        <i className="fa-solid fa-coins text-secondary-yellow text-[0.6rem]"></i>
-                        {player.coins.toLocaleString()}
+                        <i className="fa-solid fa-star text-secondary-yellow text-[0.6rem]"></i>
+                        {player.totalPoints.toLocaleString()}
                       </div>
                     </td>
                   </tr>

@@ -25,5 +25,17 @@ export const PRICE_MAP = {
   LIMITED: 500,
 };
 
+export const TIER_POINTS = {
+  C: 30,
+  B: 70,
+  A: 150,
+  R: 250,
+  S: 400,
+  SR: 600,
+  SSR: 1000,
+  UR: 2500,
+  LIMITED: 7500,
+};
+
 export const DICE_PRICE = 100; // Harga 1 dadu dalam koin
 export const DAILY_DICE_REWARD = 10; // Jumlah dadu dari klaim harian

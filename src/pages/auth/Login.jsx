@@ -2,12 +2,14 @@ import { useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
+import { validateForm } from '../../lib/validation';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
@@ -15,16 +17,32 @@ export default function Login() {
     e.preventDefault();
     setLoading(true);
     setMessage('');
+    setErrors({});
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const { isValid, errors: validationErrors } = validateForm(
+      { email, password },
+      { email: true, password: true }
+    );
 
-    if (error) setMessage('Login gagal! Periksa email dan password.');
-    else navigate('/dashboard'); // Lempar ke dashboard jika sukses
+    if (!isValid) {
+      setErrors(validationErrors);
+      setLoading(false);
+      return;
+    }
 
-    setLoading(false);
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) setMessage('Login gagal! Periksa email dan password.');
+      else navigate('/dashboard');
+    } catch (err) {
+      setMessage('Terjadi kesalahan koneksi.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -40,32 +58,39 @@ export default function Login() {
           )}
 
           <form onSubmit={handleLogin} className="flex flex-col gap-4">
-            <input
-              type="email"
-              placeholder="Email"
-              required
-              className="p-3 border-2 border-text-dark rounded-xl outline-none"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <div className="relative">
+            <div className="flex flex-col gap-1">
               <input
-                type={showPassword ? 'text' : 'password'}
-                placeholder="Password"
+                type="email"
+                placeholder="Email"
                 required
-                className="w-full p-3 border-2 border-text-dark rounded-xl outline-none focus:border-primary-blue font-sans font-bold"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                className={`p-3 border-2 rounded-xl outline-none transition-all ${errors.email ? 'border-danger bg-danger/5' : 'border-text-dark focus:border-primary-blue'}`}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted hover:text-primary-blue"
-              >
-                <i
-                  className={`fa-solid ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}
-                ></i>
-              </button>
+              {errors.email && <span className="text-[0.65rem] text-danger font-black uppercase ml-2">{errors.email}</span>}
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Password"
+                  required
+                  className={`w-full p-3 border-2 rounded-xl outline-none transition-all font-sans font-bold ${errors.password ? 'border-danger bg-danger/5' : 'border-text-dark focus:border-primary-blue'}`}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted hover:text-primary-blue"
+                >
+                  <i
+                    className={`fa-solid ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}
+                  ></i>
+                </button>
+              </div>
+              {errors.password && <span className="text-[0.65rem] text-danger font-black uppercase ml-2">{errors.password}</span>}
             </div>
             <button type="submit" disabled={loading} className="btn-neo mt-2">
               {loading ? 'Masuk...' : 'LOGIN'}

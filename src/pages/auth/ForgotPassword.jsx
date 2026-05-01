@@ -2,29 +2,43 @@ import { useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { Link } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
+import { validateEmail } from '../../lib/validation';
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [fieldError, setFieldError] = useState('');
 
   const handleReset = async (e) => {
     e.preventDefault();
     setLoading(true);
     setMessage('');
     setError('');
+    setFieldError('');
 
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
-    });
-
-    if (error) {
-      setError('Gagal mengirim email reset: ' + error.message);
-    } else {
-      setMessage('Instruksi reset password telah dikirim ke email Anda.');
+    if (!validateEmail(email)) {
+      setFieldError('Format email tidak valid');
+      setLoading(false);
+      return;
     }
-    setLoading(false);
+
+    try {
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+
+      if (resetError) {
+        setError('Gagal mengirim email reset: ' + resetError.message);
+      } else {
+        setMessage('Instruksi reset password telah dikirim ke email Anda.');
+      }
+    } catch (err) {
+      setError('Terjadi kesalahan koneksi.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -52,16 +66,19 @@ export default function ForgotPassword() {
           )}
 
           <form onSubmit={handleReset} className="flex flex-col gap-4">
-            <div className="relative">
-              <i className="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-text-muted"></i>
-              <input
-                type="email"
-                placeholder="Email Akun Anda"
-                required
-                className="w-full pl-10 pr-4 py-3 border-2 border-text-dark rounded-xl outline-none focus:border-primary-blue font-sans font-bold"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
+            <div className="flex flex-col gap-1">
+              <div className="relative">
+                <i className="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-text-muted"></i>
+                <input
+                  type="email"
+                  placeholder="Email Akun Anda"
+                  required
+                  className={`w-full pl-10 pr-4 py-3 border-2 rounded-xl outline-none transition-all font-sans font-bold ${fieldError ? 'border-danger bg-danger/5' : 'border-text-dark focus:border-primary-blue'}`}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+              {fieldError && <span className="text-[0.65rem] text-danger font-black uppercase ml-2">{fieldError}</span>}
             </div>
             <button
               type="submit"

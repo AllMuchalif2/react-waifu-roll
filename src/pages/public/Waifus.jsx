@@ -34,9 +34,10 @@ export default function Waifus() {
         SSR: 3,
         SR: 4,
         S: 5,
-        A: 6,
-        B: 7,
-        C: 8,
+        R: 6,
+        A: 7,
+        B: 8,
+        C: 9,
       };
 
       formatted.sort((a, b) => {

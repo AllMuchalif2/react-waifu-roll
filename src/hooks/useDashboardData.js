@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 import { PRICE_MAP } from '../config/gachaConfig';
 
@@ -13,28 +13,42 @@ export function useDashboardData(user, profile, fetchProfile) {
   const [isBuyingDice, setIsBuyingDice] = useState(false);
   const [buyAmount, setBuyAmount] = useState(1);
   const [selectedPoolIds, setSelectedPoolIds] = useState([]);
+  const claimTimerRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (claimTimerRef.current) clearTimeout(claimTimerRef.current);
+    };
+  }, []);
 
   const fetchInventory = useCallback(async () => {
     if (!user) return;
-    setLoading(true);
-    const { data } = await supabase
-      .from('user_waifus')
-      .select('id, waifu_pool(*)')
-      .eq('user_id', user.id);
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('user_waifus')
+        .select('id, waifu_pool(*)')
+        .eq('user_id', user.id);
 
-    if (data) {
-      const grouped = data.reduce((acc, curr) => {
-        const w = curr.waifu_pool;
-        if (!acc[w.id]) {
-          acc[w.id] = { ...w, total: 0, instanceIds: [] };
-        }
-        acc[w.id].total += 1;
-        acc[w.id].instanceIds.push(curr.id);
-        return acc;
-      }, {});
-      setInventory(Object.values(grouped).sort((a, b) => b.total - a.total));
+      if (error) throw error;
+
+      if (data) {
+        const grouped = data.reduce((acc, curr) => {
+          const w = curr.waifu_pool;
+          if (!acc[w.id]) {
+            acc[w.id] = { ...w, total: 0, instanceIds: [] };
+          }
+          acc[w.id].total += 1;
+          acc[w.id].instanceIds.push(curr.id);
+          return acc;
+        }, {});
+        setInventory(Object.values(grouped).sort((a, b) => b.total - a.total));
+      }
+    } catch (err) {
+      console.error("Fetch inventory error:", err);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }, [user]);
 
   useEffect(() => {
@@ -42,22 +56,31 @@ export function useDashboardData(user, profile, fetchProfile) {
   }, [user, fetchInventory]);
 
   const handleDailyClaim = async () => {
-    const today = new Date().toISOString().split('T')[0];
-    if (profile.last_daily_claim === today) {
-      setClaimMsg('Anda sudah klaim hadiah hari ini!');
-      setTimeout(() => setClaimMsg(''), 3000);
-      return;
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      if (profile.last_daily_claim === today) {
+        setClaimMsg('Anda sudah klaim hadiah hari ini!');
+        if (claimTimerRef.current) clearTimeout(claimTimerRef.current);
+        claimTimerRef.current = setTimeout(() => setClaimMsg(''), 3000);
+        return;
+      }
+
+      const newDice = (profile.dice_count || 0) + 10;
+      const { error } = await supabase
+        .from('profiles')
+        .update({ dice_count: newDice, last_daily_claim: today })
+        .eq('id', user.id);
+
+      if (error) throw error;
+
+      setClaimMsg('+10 Dadu Berhasil Diklaim!');
+      await fetchProfile(user.id);
+      if (claimTimerRef.current) clearTimeout(claimTimerRef.current);
+      claimTimerRef.current = setTimeout(() => setClaimMsg(''), 3000);
+    } catch (err) {
+      setClaimMsg('Gagal klaim harian.');
+      console.error(err);
     }
-
-    const newDice = profile.dice_count + 10;
-    await supabase
-      .from('profiles')
-      .update({ dice_count: newDice, last_daily_claim: today })
-      .eq('id', user.id);
-
-    setClaimMsg('+10 Dadu Berhasil Diklaim!');
-    fetchProfile(user.id);
-    setTimeout(() => setClaimMsg(''), 3000);
   };
 
   const confirmBuyDice = async () => {
@@ -66,22 +89,28 @@ export function useDashboardData(user, profile, fetchProfile) {
       return { error: 'Koin tidak cukup!' };
     }
 
-    setLoading(true);
-    const { error } = await supabase
-      .from('profiles')
-      .update({
-        coins: profile.coins - totalCost,
-        dice_count: profile.dice_count + buyAmount,
-      })
-      .eq('id', user.id);
+    try {
+      setLoading(true);
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          coins: profile.coins - totalCost,
+          dice_count: profile.dice_count + buyAmount,
+        })
+        .eq('id', user.id);
 
-    if (!error) {
+      if (error) throw error;
+
       await fetchProfile(user.id);
       setIsBuyingDice(false);
       setBuyAmount(1);
+      return { error: null };
+    } catch (err) {
+      console.error(err);
+      return { error: 'Gagal membeli dadu.' };
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
-    return { error };
   };
 
   const handleSell = (waifu) => {
@@ -92,22 +121,31 @@ export function useDashboardData(user, profile, fetchProfile) {
   const confirmSell = async () => {
     if (!sellingWaifu || sellAmount < 1) return;
 
-    const finalAmount = Math.min(sellAmount, sellingWaifu.total);
-    const idsToSell = sellingWaifu.instanceIds.slice(0, finalAmount);
-    const pricePerUnit = PRICE_MAP[sellingWaifu.tier] || 10;
-    const totalPrice = pricePerUnit * finalAmount;
+    try {
+      setLoading(true);
+      const finalAmount = Math.min(sellAmount, sellingWaifu.total);
+      const idsToSell = sellingWaifu.instanceIds.slice(0, finalAmount);
+      const pricePerUnit = PRICE_MAP[sellingWaifu.tier] || 10;
+      const totalPrice = pricePerUnit * finalAmount;
 
-    setLoading(true);
-    await supabase.from('user_waifus').delete().in('id', idsToSell);
-    await supabase
-      .from('profiles')
-      .update({ coins: profile.coins + totalPrice })
-      .eq('id', user.id);
+      const { error: delError } = await supabase.from('user_waifus').delete().in('id', idsToSell);
+      if (delError) throw delError;
 
-    await fetchProfile(user.id);
-    await fetchInventory();
-    setSellingWaifu(null);
-    setLoading(false);
+      const { error: updError } = await supabase
+        .from('profiles')
+        .update({ coins: (profile.coins || 0) + totalPrice })
+        .eq('id', user.id);
+      
+      if (updError) throw updError;
+
+      await fetchProfile(user.id);
+      await fetchInventory();
+      setSellingWaifu(null);
+    } catch (err) {
+      console.error("Sell error:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const toggleSelectPoolId = (poolId) => {
@@ -140,25 +178,30 @@ export function useDashboardData(user, profile, fetchProfile) {
   const confirmBulkSell = async () => {
     if (selectedPoolIds.length === 0) return;
 
-    setLoading(true);
     try {
+      setLoading(true);
       const { totalEarned, allIdsToSell } = calculateBulkSellInfo();
 
       if (allIdsToSell.length > 0) {
-        await supabase.from('user_waifus').delete().in('id', allIdsToSell);
-        await supabase
+        const { error: delError } = await supabase.from('user_waifus').delete().in('id', allIdsToSell);
+        if (delError) throw delError;
+
+        const { error: updError } = await supabase
           .from('profiles')
-          .update({ coins: profile.coins + totalEarned })
+          .update({ coins: (profile.coins || 0) + totalEarned })
           .eq('id', user.id);
+        
+        if (updError) throw updError;
       }
 
       await fetchProfile(user.id);
       await fetchInventory();
       setSelectedPoolIds([]);
     } catch (err) {
-      console.error(err);
+      console.error("Bulk sell error:", err);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const filteredInventory = inventory.filter((item) => {

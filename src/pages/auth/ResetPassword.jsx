@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
+import { validateForm } from '../../lib/validation';
 
 export default function ResetPassword() {
   const [password, setPassword] = useState('');
@@ -9,17 +10,17 @@ export default function ResetPassword() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Supabase secara otomatis menangani token reset dari URL
-    // Jika user mengakses halaman ini tanpa session reset, kita bisa arahkan balik
     const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        // Jika tidak ada session (token tidak valid/expired), suruh minta reset lagi
-        // Namun biasanya Supabase menangani ini di background
+      try {
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        if (sessionError) throw sessionError;
+      } catch (err) {
+        setError('Sesi reset tidak valid atau telah kadaluarsa.');
       }
     };
     checkSession();
@@ -27,26 +28,38 @@ export default function ResetPassword() {
 
   const handleUpdatePassword = async (e) => {
     e.preventDefault();
-    if (password !== confirmPassword) {
-      setError('Password konfirmasi tidak cocok!');
-      return;
-    }
-
     setLoading(true);
     setMessage('');
     setError('');
+    setErrors({});
 
-    const { error } = await supabase.auth.updateUser({
-      password: password,
-    });
+    const { isValid, errors: validationErrors } = validateForm(
+      { password, confirmPassword },
+      { password: true, confirmPassword: true }
+    );
 
-    if (error) {
-      setError('Gagal memperbarui password: ' + error.message);
-    } else {
-      setMessage('Password berhasil diperbarui! Mengalihkan ke dashboard...');
-      setTimeout(() => navigate('/dashboard'), 2000);
+    if (!isValid) {
+      setErrors(validationErrors);
+      setLoading(false);
+      return;
     }
-    setLoading(false);
+
+    try {
+      const { error: updateError } = await supabase.auth.updateUser({
+        password: password,
+      });
+
+      if (updateError) {
+        setError('Gagal memperbarui password: ' + updateError.message);
+      } else {
+        setMessage('Password berhasil diperbarui! Mengalihkan ke dashboard...');
+        setTimeout(() => navigate('/dashboard'), 2000);
+      }
+    } catch (err) {
+      setError('Terjadi kesalahan koneksi.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -74,43 +87,48 @@ export default function ResetPassword() {
           )}
 
           <form onSubmit={handleUpdatePassword} className="flex flex-col gap-4">
-            <div className="relative">
-              <i className="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-text-muted"></i>
-              <input
-                type={showPassword ? 'text' : 'password'}
-                placeholder="Password Baru"
-                required
-                minLength={6}
-                className="w-full pl-10 pr-12 py-3 border-2 border-text-dark rounded-xl outline-none focus:border-primary-blue font-sans font-bold"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted hover:text-primary-blue"
-              >
-                <i className={`fa-solid ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
-              </button>
+            <div className="flex flex-col gap-1">
+              <div className="relative">
+                <i className="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-text-muted"></i>
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Password Baru"
+                  required
+                  className={`w-full pl-10 pr-12 py-3 border-2 rounded-xl outline-none transition-all font-sans font-bold ${errors.password ? 'border-danger bg-danger/5' : 'border-text-dark focus:border-primary-blue'}`}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted hover:text-primary-blue"
+                >
+                  <i className={`fa-solid ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
+                </button>
+              </div>
+              {errors.password && <span className="text-[0.65rem] text-danger font-black uppercase ml-2">{errors.password}</span>}
             </div>
-            <div className="relative">
-              <i className="fa-solid fa-check-double absolute left-4 top-1/2 -translate-y-1/2 text-text-muted"></i>
-              <input
-                type={showPassword ? 'text' : 'password'}
-                placeholder="Konfirmasi Password"
-                required
-                minLength={6}
-                className="w-full pl-10 pr-12 py-3 border-2 border-text-dark rounded-xl outline-none focus:border-primary-blue font-sans font-bold"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted hover:text-primary-blue"
-              >
-                <i className={`fa-solid ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
-              </button>
+
+            <div className="flex flex-col gap-1">
+              <div className="relative">
+                <i className="fa-solid fa-check-double absolute left-4 top-1/2 -translate-y-1/2 text-text-muted"></i>
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Konfirmasi Password"
+                  required
+                  className={`w-full pl-10 pr-12 py-3 border-2 rounded-xl outline-none transition-all font-sans font-bold ${errors.confirmPassword ? 'border-danger bg-danger/5' : 'border-text-dark focus:border-primary-blue'}`}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted hover:text-primary-blue"
+                >
+                  <i className={`fa-solid ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
+                </button>
+              </div>
+              {errors.confirmPassword && <span className="text-[0.65rem] text-danger font-black uppercase ml-2">{errors.confirmPassword}</span>}
             </div>
             <button
               type="submit"

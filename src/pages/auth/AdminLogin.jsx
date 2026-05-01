@@ -2,12 +2,14 @@ import { useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
+import { validateEmail } from '../../lib/validation';
 
 export default function AdminLogin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
@@ -15,30 +17,41 @@ export default function AdminLogin() {
     e.preventDefault();
     setLoading(true);
     setMessage('');
+    setErrors({});
 
-    const {
-      data: { user },
-      error,
-    } = await supabase.auth.signInWithPassword({ email, password });
-
-    if (error) {
-      setMessage('Akses Ditolak: Email/Password salah.');
-    } else {
-      // Cek apakah user adalah admin di tabel profile
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', user.id)
-        .single();
-
-      if (profile?.role === 'admin') {
-        navigate('/admin');
-      } else {
-        await supabase.auth.signOut();
-        setMessage('Oopss! Kamu bukan Admin.');
-      }
+    if (!validateEmail(email)) {
+      setErrors({ email: 'Format email tidak valid' });
+      setLoading(false);
+      return;
     }
-    setLoading(false);
+
+    try {
+      const {
+        data: { user },
+        error: authError,
+      } = await supabase.auth.signInWithPassword({ email, password });
+
+      if (authError) {
+        setMessage('Akses Ditolak: Email/Password salah.');
+      } else if (user) {
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .maybeSingle();
+
+        if (profile?.role === 'admin') {
+          navigate('/admin');
+        } else {
+          await supabase.auth.signOut();
+          setMessage('Oopss! Kamu bukan Admin.');
+        }
+      }
+    } catch (err) {
+      setMessage('Terjadi kesalahan koneksi.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -56,14 +69,17 @@ export default function AdminLogin() {
           )}
 
           <form onSubmit={handleAdminLogin} className="flex flex-col gap-4">
-            <input
-              type="email"
-              placeholder="Admin Email"
-              required
-              className="p-3 border-2 border-text-dark rounded-xl outline-none"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
+            <div className="flex flex-col gap-1">
+              <input
+                type="email"
+                placeholder="Admin Email"
+                required
+                className={`p-3 border-2 rounded-xl outline-none transition-all ${errors.email ? 'border-danger bg-danger/5' : 'border-text-dark focus:border-danger'}`}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              {errors.email && <span className="text-[0.65rem] text-danger font-black uppercase ml-2">{errors.email}</span>}
+            </div>
             <div className="relative">
               <input
                 type={showPassword ? 'text' : 'password'}

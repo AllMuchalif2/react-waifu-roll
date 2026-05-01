@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { DROP_RATES } from '../config/gachaConfig';
+
+const SUCCESS_AUDIO_URL = 'https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3';
 
 export function useGacha(user, profile, fetchProfile) {
   const [isFetching, setIsFetching] = useState(false);
@@ -10,6 +12,14 @@ export function useGacha(user, profile, fetchProfile) {
   const [result, setResult] = useState(null);
   const [msg, setMsg] = useState('');
   const [showRates, setShowRates] = useState(false);
+  const timerRef = useRef(null);
+
+  // Cleanup timers on unmount
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, []);
 
   const getRandomTier = () => {
     const rand = Math.random() * 100;
@@ -34,26 +44,31 @@ export function useGacha(user, profile, fetchProfile) {
     setFlashClass('');
 
     try {
-      // Potong dadu sekaligus
-      await supabase
+      // 1. Potong dadu (dengan retry sederhana jika gagal koneksi)
+      const { error: updateError } = await supabase
         .from('profiles')
         .update({ dice_count: profile.dice_count - count })
         .eq('id', user.id);
-      fetchProfile(user.id);
+      
+      if (updateError) throw new Error("Gagal memproses dadu. Coba lagi.");
+
+      // Refresh profile data
+      await fetchProfile(user.id);
 
       const results = [];
       const userWaifusToInsert = [];
       const gachaHistoryToInsert = [];
 
-      // Loop untuk setiap roll
+      // 2. Simulasi Roll logic
       for (let i = 0; i < count; i++) {
         let selectedTier = getRandomTier();
         
-        // Ambil item dari pool (bisa dioptimasi dengan ambil semua pool dulu, tapi untuk kesederhanaan tetap per tier)
-        let { data: poolItems } = await supabase
+        let { data: poolItems, error: fetchError } = await supabase
           .from('waifu_pool')
           .select('*, user_waifus(id)')
           .eq('tier', selectedTier);
+
+        if (fetchError) throw new Error("Gagal mengambil data pool.");
 
         if (selectedTier === 'LIMITED') {
           poolItems = poolItems.filter((item) => item.user_waifus.length === 0);
@@ -64,8 +79,8 @@ export function useGacha(user, profile, fetchProfile) {
             .from('waifu_pool')
             .select('*, user_waifus(id)');
 
-          poolItems = allAvailable.filter((item) => {
-            if (item.tier === 'LIMITED' && item.user_waifus.length > 0) return false;
+          poolItems = (allAvailable || []).filter((item) => {
+            if (item.tier === 'LIMITED' && (item.user_waifus?.length || 0) > 0) return false;
             return true;
           });
         }
@@ -80,8 +95,12 @@ export function useGacha(user, profile, fetchProfile) {
 
       if (results.length > 0) {
         // Batch insert
-        await supabase.from('user_waifus').insert(userWaifusToInsert);
+        const { error: insertError } = await supabase.from('user_waifus').insert(userWaifusToInsert);
+        if (insertError) throw new Error("Gagal menyimpan waifu ke inventory.");
+        
         await supabase.from('gacha_history').insert(gachaHistoryToInsert);
+      } else {
+        throw new Error("Mesin gacha sedang kosong!");
       }
 
       await new Promise((resolve) => setTimeout(resolve, 800));
@@ -89,7 +108,6 @@ export function useGacha(user, profile, fetchProfile) {
       setIsFetching(false);
       setResult(count === 1 ? results[0] : results);
 
-      // Flash & Sound (Hanya jika dapat SSR/UR/LIMITED di salah satu roll)
       const hasHighTier = results.some(r => ['SSR', 'UR', 'LIMITED'].includes(r.tier));
       const bestWaifu = [...results].sort((a, b) => {
         const tiers = ['LIMITED', 'UR', 'SSR', 'SR', 'S', 'R', 'A', 'B', 'C'];
@@ -101,24 +119,25 @@ export function useGacha(user, profile, fetchProfile) {
       else if (bestWaifu.tier === 'LIMITED') setFlashClass('flash-limited');
 
       if (hasHighTier) {
-        const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3');
+        const audio = new Audio(SUCCESS_AUDIO_URL);
         audio.volume = 0.5;
         audio.play().catch((e) => console.log('Audio play error:', e));
       }
 
       setCountdown(2);
-      const timer = setInterval(() => {
+      if (timerRef.current) clearInterval(timerRef.current);
+      timerRef.current = setInterval(() => {
         setCountdown((prev) => (prev > 0 ? prev - 1 : 0));
       }, 1000);
 
       setTimeout(() => {
         setIsRollDisabled(false);
         setCountdown(0);
-        clearInterval(timer);
+        if (timerRef.current) clearInterval(timerRef.current);
         setFlashClass('');
       }, 2000);
     } catch (error) {
-      setMsg(error.message);
+      setMsg(error.message || "Terjadi kesalahan sistem.");
       setIsFetching(false);
       setIsRollDisabled(false);
     }
