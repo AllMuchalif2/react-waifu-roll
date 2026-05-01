@@ -8,6 +8,7 @@ import { Toaster } from 'react-hot-toast';
 import Home from './pages/public/Home';
 import Waifus from './pages/public/Waifus';
 import Changelog from './pages/public/Changelog';
+import NotFound from './pages/public/NotFound';
 
 // Auth Pages
 import Login from './pages/auth/Login';
@@ -29,6 +30,7 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminWaifus from './pages/admin/AdminWaifus';
 import AdminSuggestions from './pages/admin/AdminSuggestions';
 import GachaSimulator from './pages/admin/GachaSimulator';
+import AdminSettings from './pages/admin/Settings';
 import AdminRoute from './components/AdminRoute';
 
 export default function App() {
@@ -105,6 +107,17 @@ export default function App() {
                 </AdminRoute>
               }
             />
+            <Route
+              path="/admin/settings"
+              element={
+                <AdminRoute>
+                  <AdminSettings />
+                </AdminRoute>
+              }
+            />
+
+            {/* Catch-all 404 Route */}
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </Router>
       </AuthProvider>
