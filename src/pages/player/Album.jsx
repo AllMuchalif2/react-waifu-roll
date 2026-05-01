@@ -70,7 +70,7 @@ export default function Album() {
         <div className="flex gap-2 overflow-x-auto pb-4 no-scrollbar">
            <button 
              onClick={() => setFilter('')}
-             className={`px-4 py-1.5 rounded-full border-2 border-text-dark text-[0.6rem] font-black uppercase whitespace-nowrap transition-all ${!filter ? 'bg-secondary-yellow shadow-[2px_2px_0px_#1a1a1a]' : 'bg-white'}`}
+             className={`px-4 py-1.5 rounded-full border-2 border-text-dark text-[0.6rem] font-black uppercase whitespace-nowrap transition-all ${!filter ? 'bg-secondary-yellow shadow-[2px_2px_0px_#1a1a1a] text-[#1a1a1a]' : 'bg-white text-[#1a1a1a]'}`}
            >
              ALL
            </button>
@@ -78,7 +78,7 @@ export default function Album() {
              <button 
                 key={tier}
                 onClick={() => setFilter(tier)}
-                className={`px-4 py-1.5 rounded-full border-2 border-text-dark text-[0.6rem] font-black uppercase whitespace-nowrap transition-all ${filter === tier ? `${TIER_CONFIG[tier].color} ${TIER_CONFIG[tier].textColor} shadow-[2px_2px_0px_#1a1a1a]` : 'bg-white'}`}
+                className={`px-4 py-1.5 rounded-full border-2 border-text-dark text-[0.6rem] font-black uppercase whitespace-nowrap transition-all ${filter === tier ? `${TIER_CONFIG[tier].color} ${TIER_CONFIG[tier].textColor} shadow-[2px_2px_0px_#1a1a1a]` : 'bg-white text-[#1a1a1a]'}`}
              >
                {tier}
              </button>

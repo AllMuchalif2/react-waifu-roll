@@ -46,7 +46,7 @@ export default function InventoryFilters({
       )}
 
       <select
-        className="p-3 border-2 border-text-dark rounded-xl outline-none font-sans font-bold bg-text-dark cursor-pointer"
+        className="p-3 border-2 border-text-dark rounded-xl outline-none font-sans font-bold bg-card-bg text-text-main cursor-pointer"
         value={tierFilter}
         onChange={(e) => setTierFilter(e.target.value)}
       >

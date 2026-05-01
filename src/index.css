@@ -91,12 +91,16 @@
 
   .btn-neo-outline {
     @apply bg-card-bg text-text-main;
-    box-shadow: 4px 4px 0px var(--border);
+    box-shadow: 4px 4px 0px #1a1a1a;
   }
 
   .btn-neo-outline:active {
     @apply translate-x-px translate-y-px brightness-95;
-    box-shadow: 2px 2px 0px var(--border);
+    box-shadow: 2px 2px 0px #1a1a1a;
+  }
+
+  .dark .btn-neo-outline {
+    box-shadow: 4px 4px 0px #f8f9fa;
   }
 
   .btn-neo:disabled, .btn-neo-secondary:disabled, .btn-neo-danger:disabled, .btn-neo-outline:disabled {
@@ -106,6 +110,11 @@
   /* Input styles for dark mode compatibility */
   input, select {
     @apply bg-card-bg text-text-main border-border-main;
+  }
+
+  select option {
+    background-color: white;
+    color: #1a1a1a;
   }
 
   @keyframes fadeIn {
