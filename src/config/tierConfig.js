@@ -36,21 +36,21 @@ export const TIER_CONFIG = {
   },
   SR: {
     label: 'Super Rare',
+    color: 'bg-[#ff6b6b]',
+    textColor: 'text-white',
+    shadow: 'shadow-[3px_3px_0px_#1a1a1a]',
+  },
+  SSR: {
+    label: 'Super Special Rare',
     color: 'bg-[#ff922b]',
     textColor: 'text-white',
     shadow: 'shadow-[2px_2px_0px_#1a1a1a]',
   },
-  SSR: {
-    label: 'Super Special Rare',
+  UR: {
+    label: 'Ultimate Rare',
     color: 'bg-[#fcc419]',
     textColor: 'text-[#1a1a1a]',
     shadow: 'shadow-[3px_3px_0px_#ff922b]',
-  },
-  UR: {
-    label: 'Ultimate Rare',
-    color: 'bg-[#ff6b6b]',
-    textColor: 'text-white',
-    shadow: 'shadow-[3px_3px_0px_#1a1a1a]',
   },
   LIMITED: {
     label: 'Limited (1/1)',

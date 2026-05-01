@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '../lib/supabase';
-import { PRICE_MAP } from '../config/gachaConfig';
+import { PRICE_MAP, DICE_PRICE } from '../config/gachaConfig';
 
 export function useDashboardData(user, profile, fetchProfile) {
   const [inventory, setInventory] = useState([]);
@@ -84,7 +84,7 @@ export function useDashboardData(user, profile, fetchProfile) {
   };
 
   const confirmBuyDice = async () => {
-    const totalCost = buyAmount * 100;
+    const totalCost = buyAmount * DICE_PRICE;
     if (profile.coins < totalCost) {
       return { error: 'Koin tidak cukup!' };
     }

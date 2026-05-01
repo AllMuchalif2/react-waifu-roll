@@ -3,9 +3,7 @@ import Navbar from '../../components/Navbar';
 import BottomNav from '../../components/BottomNav';
 import WaifuCard from '../../components/WaifuCard';
 import { TIER_CONFIG } from '../../config/tierConfig';
-
-const SUCCESS_AUDIO_URL = 'https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3';
-const LIMITED_AUDIO_URL = 'https://assets.mixkit.co/active_storage/sfx/2018/2018-preview.mp3';
+import { playGachaSound, getFlashClassByTier, getBestTier } from '../../lib/gachaEffects';
 
 const MOCK_WAIFUS = {
   C: { name: 'Mock Common', tier: 'C', image_url: 'https://placehold.co/400x400/adb5bd/white?text=Common' },
@@ -57,21 +55,9 @@ export default function GachaSimulator() {
       setIsFetching(false);
 
       // Trigger effects based on highest tier
-      const bestTier = count === 1 ? tier : [...results].sort((a, b) => {
-        const tiersOrder = ['LIMITED', 'UR', 'SSR', 'SR', 'S', 'R', 'A', 'B', 'C'];
-        return tiersOrder.indexOf(a.tier) - tiersOrder.indexOf(b.tier);
-      })[0].tier;
-
-      if (bestTier === 'SSR') setFlashClass('flash-ssr');
-      else if (bestTier === 'UR') setFlashClass('flash-ur');
-      else if (bestTier === 'LIMITED') setFlashClass('flash-limited');
-
-      if (['SSR', 'UR', 'LIMITED'].includes(bestTier)) {
-        const audioUrl = bestTier === 'LIMITED' ? LIMITED_AUDIO_URL : SUCCESS_AUDIO_URL;
-        const audio = new Audio(audioUrl);
-        audio.volume = 0.5;
-        audio.play().catch((e) => console.log('Audio play error:', e));
-      }
+      const bestTier = getBestTier(results);
+      setFlashClass(getFlashClassByTier(bestTier));
+      playGachaSound(bestTier);
 
       // Clear flash after 2s
       if (timerRef.current) clearTimeout(timerRef.current);

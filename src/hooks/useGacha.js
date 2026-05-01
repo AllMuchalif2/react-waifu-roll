@@ -1,9 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { DROP_RATES } from '../config/gachaConfig';
-
-const SUCCESS_AUDIO_URL = 'https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3';
-const LIMITED_AUDIO_URL = 'https://assets.mixkit.co/active_storage/sfx/2018/2018-preview.mp3';
+import { playGachaSound, getFlashClassByTier, getBestTier } from '../lib/gachaEffects';
 
 export function useGacha(user, profile, fetchProfile) {
   const [isFetching, setIsFetching] = useState(false);
@@ -109,36 +107,18 @@ export function useGacha(user, profile, fetchProfile) {
       setIsFetching(false);
       setResult(count === 1 ? results[0] : results);
 
-      const hasHighTier = results.some(r => ['SSR', 'UR', 'LIMITED'].includes(r.tier));
-      const bestWaifu = [...results].sort((a, b) => {
-        const tiers = ['LIMITED', 'UR', 'SSR', 'SR', 'S', 'R', 'A', 'B', 'C'];
-        return tiers.indexOf(a.tier) - tiers.indexOf(b.tier);
-      })[0];
+      // Trigger effects
+      const bestTier = getBestTier(results);
+      setFlashClass(getFlashClassByTier(bestTier));
+      playGachaSound(bestTier);
 
-      if (bestWaifu.tier === 'SSR') setFlashClass('flash-ssr');
-      else if (bestWaifu.tier === 'UR') setFlashClass('flash-ur');
-      else if (bestWaifu.tier === 'LIMITED') setFlashClass('flash-limited');
-
-      if (hasHighTier) {
-        const hasLimited = results.some(r => r.tier === 'LIMITED');
-        const audioUrl = hasLimited ? LIMITED_AUDIO_URL : SUCCESS_AUDIO_URL;
-        const audio = new Audio(audioUrl);
-        audio.volume = 0.5;
-        audio.play().catch((e) => console.log('Audio play error:', e));
-      }
-
-      setCountdown(2);
-      if (timerRef.current) clearInterval(timerRef.current);
-      timerRef.current = setInterval(() => {
-        setCountdown((prev) => (prev > 0 ? prev - 1 : 0));
-      }, 1000);
-
-      setTimeout(() => {
-        setIsRollDisabled(false);
-        setCountdown(0);
-        if (timerRef.current) clearInterval(timerRef.current);
+      // Clear flash after 2s
+      if (timerRef.current) clearTimeout(timerRef.current);
+      timerRef.current = setTimeout(() => {
         setFlashClass('');
+        setIsRollDisabled(false);
       }, 2000);
+
     } catch (error) {
       setMsg(error.message || "Terjadi kesalahan sistem.");
       setIsFetching(false);
