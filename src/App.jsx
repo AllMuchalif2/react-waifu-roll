@@ -3,6 +3,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import ErrorBoundary from './components/ErrorBoundary';
 import { Toaster } from 'react-hot-toast';
+import MaintenanceGuard from './components/MaintenanceGuard';
 
 // Public Pages
 import Home from './pages/public/Home';
@@ -44,39 +45,47 @@ export default function App() {
             style: {
               border: '2px solid var(--border)',
               padding: '16px',
-              color: 'var(--border)',
+              color: 'var(--text)',
               fontWeight: '900',
               borderRadius: '12px',
               boxShadow: '4px 4px 0px var(--border)',
-              background: '#fff',
+              background: 'var(--card)',
             },
           }}
         />
         <AuthProvider>
           <Router>
             <Routes>
-              {/* Public Routes */}
-              <Route path="/" element={<Home />} />
-              <Route path="/waifus" element={<Waifus />} />
-              <Route path="/rank" element={<Rank />} />
-              <Route path="/changelog" element={<Changelog />} />
-              <Route path="/free" element={<RickRedirect />} />
-
-              {/* Auth Routes */}
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/forgot-password" element={<ForgotPassword />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
+              {/* Admin Login Bypasses Maintenance */}
               <Route path="/admin-login" element={<AdminLogin />} />
 
-              {/* Player Routes (Sudah ada proteksi di dalam komponen) */}
-              <Route path="/dashboard" element={<PlayerDashboard />} />
-              <Route path="/gacha" element={<Gacha />} />
-              <Route path="/history" element={<History />} />
-              <Route path="/suggestions" element={<Suggestions />} />
-              <Route path="/album" element={<Album />} />
+              {/* Maintenance Guarded Routes */}
+              <Route element={<MaintenanceGuard />}>
+                {/* Public Routes */}
+                <Route path="/" element={<Home />} />
+                <Route path="/waifus" element={<Waifus />} />
+                <Route path="/rank" element={<Rank />} />
+                <Route path="/changelog" element={<Changelog />} />
+                <Route path="/free" element={<RickRedirect />} />
 
-              {/* Admin Routes (Proteksi Level Route) */}
+                {/* Auth Routes */}
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
+
+                {/* Player Routes*/}
+                <Route path="/dashboard" element={<PlayerDashboard />} />
+                <Route path="/gacha" element={<Gacha />} />
+                <Route path="/history" element={<History />} />
+                <Route path="/suggestions" element={<Suggestions />} />
+                <Route path="/album" element={<Album />} />
+                
+                {/* Catch-all 404 Route */}
+                <Route path="*" element={<NotFound />} />
+              </Route>
+
+              {/* Admin Routes*/}
               <Route
                 path="/admin"
                 element={
@@ -118,8 +127,7 @@ export default function App() {
                 }
               />
 
-              {/* Catch-all 404 Route */}
-              <Route path="*" element={<NotFound />} />
+
             </Routes>
           </Router>
         </AuthProvider>

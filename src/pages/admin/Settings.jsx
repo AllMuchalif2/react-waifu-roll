@@ -6,6 +6,7 @@ import { toast } from 'react-hot-toast';
 
 export default function AdminSettings() {
   const [settings, setSettings] = useState([]);
+  const [maintenanceMode, setMaintenanceMode] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -15,13 +16,23 @@ export default function AdminSettings() {
 
   const fetchSettings = async () => {
     try {
-      const { data, error } = await supabase
-        .from('tier_settings')
-        .select('*')
-        .order('sell_price', { ascending: false });
+      const [tierRes, appRes] = await Promise.all([
+        supabase
+          .from('tier_settings')
+          .select('*')
+          .order('sell_price', { ascending: false }),
+        supabase.from('app_settings').select('*'),
+      ]);
 
-      if (error) throw error;
-      setSettings(data || []);
+      if (tierRes.error) throw tierRes.error;
+      setSettings(tierRes.data || []);
+
+      const maintenanceRow = appRes.data?.find(
+        (s) => s.key === 'maintenance_mode',
+      );
+      if (maintenanceRow) {
+        setMaintenanceMode(maintenanceRow.value === 'true');
+      }
     } catch (err) {
       toast.error('Gagal memuat pengaturan.');
       console.error(err);
@@ -62,6 +73,14 @@ export default function AdminSettings() {
 
         if (error) throw error;
       }
+
+      const { error: appError } = await supabase
+        .from('app_settings')
+        .update({ value: maintenanceMode ? 'true' : 'false' })
+        .eq('key', 'maintenance_mode');
+
+      if (appError) throw appError;
+
       toast.success('Pengaturan berhasil disimpan!');
     } catch (err) {
       toast.error('Gagal menyimpan perubahan.');
@@ -92,14 +111,39 @@ export default function AdminSettings() {
                 Atur Harga Jual & Drop Rates Gacha
               </p>
             </div>
-            <Link 
-              to="/admin" 
+            <Link
+              to="/admin"
               className="bg-white text-primary px-3 py-1.5 rounded-lg font-black text-[0.6rem] uppercase border-2 border-text-dark shadow-[3px_3px_0px_var(--border)] active:translate-x-px active:translate-y-px active:shadow-none transition-all no-underline"
             >
               <i className="fa-solid fa-arrow-left mr-1"></i> Kembali
             </Link>
           </div>
           <i className="fa-solid fa-gears absolute -right-4 -bottom-4 text-white/10 text-8xl rotate-12"></i>
+        </div>
+
+        {/* Global Settings */}
+        <div className="card-neo mb-6 p-6 flex items-center justify-between">
+          <div>
+            <h3 className="text-sm font-black uppercase italic text-danger flex items-center gap-2">
+              <i className="fa-solid fa-triangle-exclamation"></i>
+              Maintenance Mode
+            </h3>
+            <p className="text-[0.65rem] font-bold text-text-muted mt-1 uppercase">
+              Kunci seluruh akses player.
+            </p>
+          </div>
+          <button
+            onClick={() => setMaintenanceMode(!maintenanceMode)}
+            className={`w-14 h-8 flex items-center rounded-full p-1 transition-colors duration-300 ${
+              maintenanceMode ? 'bg-danger' : 'bg-border-main'
+            }`}
+          >
+            <div
+              className={`w-6 h-6 bg-white rounded-full transition-transform duration-300 shadow-sm ${
+                maintenanceMode ? 'translate-x-6' : 'translate-x-0'
+              }`}
+            ></div>
+          </button>
         </div>
 
         <div className="space-y-4">

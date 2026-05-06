@@ -77,7 +77,7 @@
   }
 
   .btn-neo-secondary {
-    @apply bg-secondary text-text-main;
+    @apply bg-secondary text-[#1a1a1a];
     box-shadow: 6px 6px 0px var(--color-primary);
   }
 

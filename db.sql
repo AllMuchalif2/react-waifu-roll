@@ -136,7 +136,7 @@ CREATE FUNCTION public.roll_gacha_secure(roll_count integer) RETURNS jsonb
     LANGUAGE plpgsql SECURITY DEFINER
     AS $$
 DECLARE
-    user_id UUID := auth.uid();
+    v_user_id UUID := auth.uid();
     current_dice INT;
     results JSONB := '[]'::jsonb;
     rand_val FLOAT;
@@ -144,7 +144,7 @@ DECLARE
     picked_waifu RECORD;
     i INT;
 BEGIN
-    SELECT dice_count INTO current_dice FROM profiles WHERE id = user_id;
+    SELECT dice_count INTO current_dice FROM profiles WHERE id = v_user_id;
     IF current_dice < roll_count THEN RAISE EXCEPTION 'Dadu tidak cukup!'; END IF;
 
     FOR i IN 1..roll_count LOOP
@@ -171,21 +171,21 @@ BEGIN
         WHERE tier = picked_tier ORDER BY RANDOM() LIMIT 1;
 
         IF picked_waifu.id IS NOT NULL THEN
-            INSERT INTO user_waifus (user_id, waifu_id) VALUES (user_id, picked_waifu.id);
-            INSERT INTO gacha_history (user_id, waifu_id) VALUES (user_id, picked_waifu.id);
+            INSERT INTO user_waifus (user_id, waifu_id) VALUES (v_user_id, picked_waifu.id);
+            INSERT INTO gacha_history (user_id, waifu_id) VALUES (v_user_id, picked_waifu.id);
             results := results || to_jsonb(picked_waifu);
         END IF;
     END LOOP;
 
-    UPDATE profiles SET dice_count = dice_count - roll_count WHERE id = user_id;
+    UPDATE profiles SET dice_count = dice_count - roll_count WHERE id = v_user_id;
 
     -- Cleanup gacha_history: Delete records older than 1 week, keeping at least 30 most recent records
     DELETE FROM public.gacha_history
-    WHERE user_id = roll_gacha_secure.user_id
+    WHERE user_id = v_user_id
       AND created_at < NOW() - INTERVAL '7 days'
       AND id NOT IN (
           SELECT id FROM public.gacha_history 
-          WHERE user_id = roll_gacha_secure.user_id 
+          WHERE user_id = v_user_id 
           ORDER BY created_at DESC 
           LIMIT 30
       );
@@ -951,3 +951,25 @@ ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA public GRANT ALL ON T
 ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA public GRANT ALL ON TABLES TO authenticated;
 ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA public GRANT ALL ON TABLES TO service_role;
 
+
+--
+-- Name: app_settings; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.app_settings (
+    key TEXT PRIMARY KEY,
+    value TEXT NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+INSERT INTO public.app_settings (key, value) VALUES ('maintenance_mode', 'false');
+
+ALTER TABLE public.app_settings ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "App settings are viewable by everyone" ON public.app_settings FOR SELECT USING (true);
+
+CREATE POLICY "Only admins can update settings" ON public.app_settings FOR UPDATE USING (
+  EXISTS (
+    SELECT 1 FROM public.profiles WHERE profiles.id = auth.uid() AND profiles.role = 'admin'
+  )
+);
