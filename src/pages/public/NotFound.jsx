@@ -7,16 +7,16 @@ export default function NotFound() {
       <div className="absolute top-10 left-10 text-9xl font-black opacity-5 select-none -rotate-12">404</div>
       <div className="absolute bottom-10 right-10 text-9xl font-black opacity-5 select-none rotate-12">LOST</div>
 
-      <div className="card-neo max-w-lg w-full text-center p-12 bg-white relative z-10 border-4 border-text-dark shadow-[12px_12px_0px_#1a1a1a]">
-        <div className="text-primary-blue mb-6">
+      <div className="card-neo max-w-lg w-full text-center p-12 bg-white relative z-10 border-4 border-text-dark shadow-[12px_12px_0px_var(--border)]">
+        <div className="text-primary mb-6">
           <i className="fa-solid fa-map-location-dot text-8xl animate-bounce"></i>
         </div>
         
-        <h1 className="text-6xl font-black mb-4 uppercase italic tracking-tighter text-[#1a1a1a]">
+        <h1 className="text-6xl font-black mb-4 uppercase italic tracking-tighter text-text-main">
           404 <span className="text-danger">!!</span>
         </h1>
         
-        <h2 className="text-2xl font-black mb-6 uppercase text-[#1a1a1a]">
+        <h2 className="text-2xl font-black mb-6 uppercase text-text-main">
           Kesasar Ya?
         </h2>
         

@@ -1,6 +1,3 @@
-// Konfigurasi Gacha & Ekonomi Game
-// File ini memusatkan seluruh angka penting agar mudah diatur (Balancing)
-
 export const DROP_RATES = [
   { tier: 'LIMITED', chance: 0.01, label: 'Limited (1/1)' },
   { tier: 'UR', chance: 0.19, label: 'Ultimate Rare' },

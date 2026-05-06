@@ -1,12 +1,12 @@
 import { TIER_CONFIG } from '../config/tierConfig';
 
-export default function WaifuCard({ 
-  waifu, 
-  isInventory = false, 
-  onSell, 
+export default function WaifuCard({
+  waifu,
+  isInventory = false,
+  onSell,
   isSelectionMode = false,
   isSelected = false,
-  onToggleSelection 
+  onToggleSelection,
 }) {
   if (!waifu) return null;
 
@@ -20,18 +20,22 @@ export default function WaifuCard({
   };
 
   return (
-    <div 
+    <div
       onClick={handleClick}
       className={`p-3 border-2 rounded-xl bg-card-bg text-center transition-all duration-200 relative group cursor-pointer ${
-        isSelectionMode && isSelected 
-          ? 'border-primary-blue scale-[0.98] shadow-[inset_0_0_0_4px_rgba(61,90,254,0.1)]' 
+        isSelectionMode && isSelected
+          ? 'border-primary scale-[0.98] shadow-[inset_0_0_0_4px_rgba(61,90,254,0.1)]'
           : 'border-border-main hover:-translate-y-1'
       }`}
     >
       {isSelectionMode && (
-        <div className={`absolute top-2 left-2 w-6 h-6 rounded-lg border-2 z-20 flex items-center justify-center transition-all ${
-          isSelected ? 'bg-primary-blue border-primary-blue text-white' : 'bg-white/50 border-border-main'
-        }`}>
+        <div
+          className={`absolute top-2 left-2 w-6 h-6 rounded-lg border-2 z-20 flex items-center justify-center transition-all ${
+            isSelected
+              ? 'bg-primary border-primary text-white'
+              : 'bg-white/50 border-border-main'
+          }`}
+        >
           {isSelected && <i className="fa-solid fa-check text-[0.8rem]"></i>}
         </div>
       )}
@@ -58,7 +62,7 @@ export default function WaifuCard({
       {!isInventory ? (
         <div className="flex flex-col gap-1">
           {waifu.tier === 'LIMITED' && waifu.owner && (
-            <div className="text-[0.65rem] bg-border-main text-secondary-yellow py-1 px-2 rounded-lg font-black uppercase">
+            <div className="text-[0.65rem] text-primary py-1 px-2 rounded-lg font-black uppercase">
               <i className="fa-solid fa-crown mr-1"></i>
               {waifu.owner}
             </div>
@@ -73,7 +77,7 @@ export default function WaifuCard({
                 e.stopPropagation();
                 onSell && onSell(waifu);
               }}
-              className="btn-neo-secondary mt-2 w-full px-2 py-1 text-[0.7rem] rounded-lg"
+              className="btn-neo-secondary text-primary mt-2 w-full px-2 py-1 text-[0.7rem] rounded-lg"
             >
               JUAL
             </button>

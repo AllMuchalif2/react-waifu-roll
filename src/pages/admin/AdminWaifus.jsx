@@ -223,7 +223,7 @@ export default function AdminWaifus() {
           </h1>
 
           {message && (
-            <div className="mb-4 p-3 bg-secondary-yellow text-[#1a1a1a] text-center font-bold border-2 border-border-main rounded-xl">
+            <div className="mb-4 p-3 bg-secondary text-text-main text-center font-bold border-2 border-border-main rounded-xl">
               {message}
             </div>
           )}
@@ -236,7 +236,7 @@ export default function AdminWaifus() {
                 value={searchName}
                 onChange={(e) => setSearchName(e.target.value)}
                 placeholder="Contoh: Mikasa Ackerman"
-                className="flex-1 p-3 border-2 border-border-main bg-bg-main rounded-xl outline-none focus:border-primary-blue font-sans font-medium"
+                className="flex-1 p-3 border-2 border-border-main bg-bg-main rounded-xl outline-none focus:border-primary font-sans font-medium"
               />
               <button
                 type="submit"
@@ -257,7 +257,7 @@ export default function AdminWaifus() {
                 <button
                   key={char.mal_id}
                   onClick={() => selectCharacter(char)}
-                  className="flex items-center gap-3 p-2 bg-card-bg border-2 border-border-main rounded-lg hover:bg-primary-blue/10 transition-colors text-left"
+                  className="flex items-center gap-3 p-2 bg-card-bg border-2 border-border-main rounded-lg hover:bg-primary/10 transition-colors text-left"
                 >
                   <img
                     src={char.images.webp.small_image_url}
@@ -293,7 +293,7 @@ export default function AdminWaifus() {
                 value={jikanId}
                 onChange={(e) => setJikanId(e.target.value)}
                 placeholder="Contoh ID: 118744"
-                className="w-full p-3 border-2 border-border-main bg-bg-main rounded-xl mt-1 outline-none focus:border-primary-blue font-sans font-medium"
+                className="w-full p-3 border-2 border-border-main bg-bg-main rounded-xl mt-1 outline-none focus:border-primary font-sans font-medium"
               />
             </div>
 
@@ -324,7 +324,7 @@ export default function AdminWaifus() {
         </div>
 
         {preview && (
-          <div className="card-neo bg-bg-main border-dashed flex flex-col items-center border-primary-blue">
+          <div className="card-neo bg-bg-main border-dashed flex flex-col items-center border-primary">
             <h2 className="text-lg mb-4 font-black text-center text-text-main">
               Preview Kartu
             </h2>
@@ -344,7 +344,7 @@ export default function AdminWaifus() {
 
         <div className="card-neo bg-card-bg">
           <h2 className="text-lg mb-4 font-black uppercase flex items-center gap-2 text-text-main">
-            <i className="fa-solid fa-layer-group text-primary-blue"></i>
+            <i className="fa-solid fa-layer-group text-primary"></i>
             Database Pool ({filteredDbWaifus.length})
           </h2>
 
@@ -354,7 +354,7 @@ export default function AdminWaifus() {
               <input
                 type="text"
                 placeholder="Cari di database..."
-                className="w-full pl-9 pr-3 py-2 border-2 border-border-main bg-bg-main rounded-xl outline-none focus:border-primary-blue text-xs font-bold text-text-main"
+                className="w-full pl-9 pr-3 py-2 border-2 border-border-main bg-bg-main rounded-xl outline-none focus:border-primary text-xs font-bold text-text-main"
                 value={dbSearch}
                 onChange={(e) => setDbSearch(e.target.value)}
               />
@@ -395,7 +395,7 @@ export default function AdminWaifus() {
                   {isEditing === waifu.id ? (
                     <select
                       autoFocus
-                      className="text-[0.65rem] font-bold border-b-2 border-primary-blue outline-none bg-transparent text-text-main"
+                      className="text-[0.65rem] font-bold border-b-2 border-primary outline-none bg-transparent text-text-main"
                       defaultValue={waifu.tier}
                       onChange={(e) => handleUpdateTier(waifu.id, e.target.value)}
                       onBlur={() => setIsEditing(null)}
@@ -412,12 +412,12 @@ export default function AdminWaifus() {
                     </select>
                   ) : (
                     <div className="flex items-center gap-2">
-                      <span className="text-[0.6rem] font-black px-1.5 py-0.5 bg-primary-blue text-white rounded">
+                      <span className="text-[0.6rem] font-black px-1.5 py-0.5 bg-primary text-white rounded">
                         {waifu.tier}
                       </span>
                       <button
                         onClick={() => setIsEditing(waifu.id)}
-                        className="text-[0.6rem] font-bold text-primary-blue hover:underline"
+                        className="text-[0.6rem] font-bold text-primary hover:underline"
                       >
                         Edit Tier
                       </button>

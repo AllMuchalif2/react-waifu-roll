@@ -64,11 +64,11 @@ export default function Register() {
       <Navbar />
       <main className="px-4 max-w-sm mx-auto mt-10">
         <div className="card-neo">
-          <h1 className="text-2xl mb-6 text-center text-primary-blue">
+          <h1 className="text-2xl mb-6 text-center text-primary">
             Register
           </h1>
           {message && (
-            <div className="mb-4 p-3 bg-secondary-yellow border-2 border-text-dark rounded-xl text-sm font-bold">
+            <div className="mb-4 p-3 bg-secondary border-2 border-text-dark rounded-xl text-sm font-bold">
               {message}
             </div>
           )}
@@ -79,7 +79,7 @@ export default function Register() {
                 type="email"
                 placeholder="Email"
                 required
-                className={`p-3 border-2 rounded-xl outline-none transition-all ${errors.email ? 'border-danger bg-danger/5' : 'border-text-dark focus:border-primary-blue'}`}
+                className={`p-3 border-2 rounded-xl outline-none transition-all ${errors.email ? 'border-danger bg-danger/5' : 'border-text-dark focus:border-primary'}`}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
@@ -92,7 +92,7 @@ export default function Register() {
                 placeholder="Username (3-15 char)"
                 maxLength={15}
                 required
-                className={`p-3 border-2 rounded-xl outline-none transition-all ${errors.username ? 'border-danger bg-danger/5' : 'border-text-dark focus:border-primary-blue'}`}
+                className={`p-3 border-2 rounded-xl outline-none transition-all ${errors.username ? 'border-danger bg-danger/5' : 'border-text-dark focus:border-primary'}`}
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
               />
@@ -105,14 +105,14 @@ export default function Register() {
                   type={showPassword ? 'text' : 'password'}
                   placeholder="Password (min 6 char)"
                   required
-                  className={`w-full p-3 border-2 rounded-xl outline-none transition-all font-sans font-bold ${errors.password ? 'border-danger bg-danger/5' : 'border-text-dark focus:border-primary-blue'}`}
+                  className={`w-full p-3 border-2 rounded-xl outline-none transition-all font-sans font-bold ${errors.password ? 'border-danger bg-danger/5' : 'border-text-dark focus:border-primary'}`}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted hover:text-primary-blue"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted hover:text-primary"
                 >
                   <i className={`fa-solid ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
                 </button>
@@ -125,13 +125,13 @@ export default function Register() {
           </form>
           <div className="mt-4 text-center text-sm font-bold">
             Sudah punya akun?{' '}
-            <Link to="/login" className="text-primary-blue">
+            <Link to="/login" className="text-primary">
               Login di sini
             </Link>
           </div>
         </div>
         <div className="mt-8 text-center">
-          <Link to="/" className="inline-flex items-center gap-2 text-sm font-bold text-text-dark hover:text-primary-blue transition-colors no-underline">
+          <Link to="/" className="inline-flex items-center gap-2 text-sm font-bold text-text-dark hover:text-primary transition-colors no-underline">
             <i className="fa-solid fa-arrow-left"></i> Kembali ke Home
           </Link>
         </div>

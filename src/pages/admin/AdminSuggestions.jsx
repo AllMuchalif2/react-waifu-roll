@@ -63,7 +63,7 @@ export default function AdminSuggestions() {
               onClick={() => setFilter(s)}
               className={`px-4 py-2 rounded-xl border-2 border-border-main font-black text-[0.65rem] uppercase transition-all shadow-[3px_3px_0px_var(--border)] active:translate-x-px active:translate-y-px active:shadow-none ${
                 filter === s
-                  ? 'bg-secondary-yellow text-[#1a1a1a]'
+                  ? 'bg-secondary text-text-main'
                   : 'bg-card-bg text-text-muted'
               }`}
             >

@@ -34,10 +34,10 @@ export default function History() {
 
   const getTierColor = (tier) => {
     switch (tier?.toUpperCase()) {
-      case 'S': return 'bg-[#ffea00] text-black'; // Secondary Yellow
-      case 'A': return 'bg-[#9333ea] text-white'; // Purple
-      case 'B': return 'bg-[#3d5afe] text-white'; // Primary Blue
-      case 'C': return 'bg-[#10b981] text-white'; // Emerald
+      case 'S': return 'bg-secondary text-black'; // Secondary Yellow
+      case 'A': return 'bg-purple text-white'; // Purple
+      case 'B': return 'bg-primary text-white'; // Primary Blue
+      case 'C': return 'bg-success text-white'; // Emerald
       default: return 'bg-gray-500 text-white';
     }
   };
@@ -46,9 +46,12 @@ export default function History() {
     <>
       <Navbar />
       <main className="px-4 max-w-md mx-auto pb-24">
-        <h1 className="text-2xl font-black text-center mb-6 uppercase italic">
+        <h1 className="text-2xl font-black text-center mb-1 uppercase italic">
           Riwayat Gacha
         </h1>
+        <p className="text-center text-xs font-bold text-text-muted mb-6">
+          Riwayat maksimal 30 data dan otomatis dihapus setelah 1 minggu.
+        </p>
 
         {loading ? (
           <div className="text-center font-bold animate-pulse text-text-muted">

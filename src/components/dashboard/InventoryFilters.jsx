@@ -16,7 +16,7 @@ export default function InventoryFilters({
           <input
             type="text"
             placeholder="Cari koleksi waifu..."
-            className="w-full pl-10 pr-4 py-3 border-2 border-text-dark rounded-xl outline-none focus:border-primary-blue transition-colors font-sans font-medium"
+            className="w-full pl-10 pr-4 py-3 border-2 border-text-dark rounded-xl outline-none focus:border-primary transition-colors font-sans font-medium"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -26,7 +26,7 @@ export default function InventoryFilters({
           className={`px-4 py-2 rounded-xl border-2 font-black text-xs uppercase transition-all shadow-[3px_3px_0px_var(--border)] active:translate-x-px active:translate-y-px active:shadow-none ${
             isSelectionMode 
               ? 'bg-danger text-white border-border-main' 
-              : 'bg-card-bg text-primary-blue border-border-main'
+              : 'bg-card-bg text-primary border-border-main'
           }`}
         >
           <i className={`fa-solid ${isSelectionMode ? 'fa-xmark' : 'fa-list-check'} mr-2`}></i>

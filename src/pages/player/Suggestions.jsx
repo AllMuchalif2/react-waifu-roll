@@ -85,11 +85,11 @@ export default function Suggestions() {
   const getStatusStyle = (status) => {
     switch (status) {
       case 'approved':
-        return 'bg-primary-blue text-white font-black border-text-dark';
+        return 'bg-primary text-white font-black border-text-dark';
       case 'rejected':
         return 'bg-danger text-white font-black border-text-dark';
       default:
-        return 'bg-secondary-yellow text-text-dark border-text-dark';
+        return 'bg-secondary text-text-dark border-text-dark';
     }
   };
 
@@ -108,7 +108,7 @@ export default function Suggestions() {
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             {msg.text && (
               <div
-                className={`p-3 rounded-xl border-2 border-border-main font-bold text-sm text-center ${msg.type === 'success' ? 'bg-primary-blue/20 text-text-main' : 'bg-danger/20 text-danger'}`}
+                className={`p-3 rounded-xl border-2 border-border-main font-bold text-sm text-center ${msg.type === 'success' ? 'bg-primary/20 text-text-main' : 'bg-danger/20 text-danger'}`}
               >
                 {msg.text}
               </div>
@@ -125,7 +125,7 @@ export default function Suggestions() {
                     value={searchName}
                     onChange={(e) => setSearchName(e.target.value)}
                     placeholder="Contoh: Kurumi Tokisaki"
-                    className="flex-1 p-3 border-2 border-text-dark rounded-xl mt-1 outline-none focus:border-primary-blue font-sans font-medium text-sm"
+                    className="flex-1 p-3 border-2 border-text-dark rounded-xl mt-1 outline-none focus:border-primary font-sans font-medium text-sm"
                   />
                   <button
                     type="button"
@@ -148,7 +148,7 @@ export default function Suggestions() {
                         key={char.mal_id}
                         type="button"
                         onClick={() => setSelectedChar(char)}
-                        className="flex items-center gap-3 p-2 hover:bg-primary-blue/20 rounded-lg transition-colors text-left border border-transparent hover:border-border-main"
+                        className="flex items-center gap-3 p-2 hover:bg-primary/20 rounded-lg transition-colors text-left border border-transparent hover:border-border-main"
                       >
                         <img
                           src={char.images.webp.small_image_url}
@@ -164,7 +164,7 @@ export default function Suggestions() {
                 )}
               </div>
             ) : (
-              <div className="card-neo bg-card-bg p-4 rounded-2xl border-2 border-dashed border-primary-blue flex items-center justify-between">
+              <div className="card-neo bg-card-bg p-4 rounded-2xl border-2 border-dashed border-primary flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <img
                     src={selectedChar.images.webp.image_url}

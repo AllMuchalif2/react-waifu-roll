@@ -32,7 +32,7 @@ export default function Changelog() {
       case 'DELETE':
         return 'bg-danger/10 text-danger border-danger';
       case 'UPDATE':
-        return 'bg-primary-blue/10 text-primary-blue border-primary-blue';
+        return 'bg-primary/10 text-primary border-primary';
       default:
         return 'bg-gray-100 text-gray-600 border-gray-300';
     }

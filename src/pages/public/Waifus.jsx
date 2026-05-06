@@ -67,7 +67,7 @@ export default function Waifus() {
             <h2 className="text-xl">Daftar Waifu Pool</h2>
             <Link
               to="/changelog"
-              className="text-[0.65rem] font-black uppercase text-primary-blue bg-primary-blue/10 px-2 py-1 rounded-md border border-primary-blue/20 no-underline"
+              className="text-[0.65rem] font-black uppercase text-primary bg-primary/10 px-2 py-1 rounded-md border border-primary/20 no-underline"
             >
               <i className="fa-solid fa-clock-rotate-left mr-1"></i> Changelog
             </Link>
@@ -78,7 +78,7 @@ export default function Waifus() {
               <input
                 type="text"
                 placeholder="Cari waifu..."
-                className="w-full pl-10 pr-4 py-3 border-2 border-border-main rounded-xl outline-none focus:border-primary-blue transition-colors font-sans font-medium"
+                className="w-full pl-10 pr-4 py-3 border-2 border-border-main rounded-xl outline-none focus:border-primary transition-colors font-sans font-medium"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />

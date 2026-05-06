@@ -172,11 +172,24 @@ BEGIN
 
         IF picked_waifu.id IS NOT NULL THEN
             INSERT INTO user_waifus (user_id, waifu_id) VALUES (user_id, picked_waifu.id);
+            INSERT INTO gacha_history (user_id, waifu_id) VALUES (user_id, picked_waifu.id);
             results := results || to_jsonb(picked_waifu);
         END IF;
     END LOOP;
 
     UPDATE profiles SET dice_count = dice_count - roll_count WHERE id = user_id;
+
+    -- Cleanup gacha_history: Delete records older than 1 week, keeping at least 30 most recent records
+    DELETE FROM public.gacha_history
+    WHERE user_id = roll_gacha_secure.user_id
+      AND created_at < NOW() - INTERVAL '7 days'
+      AND id NOT IN (
+          SELECT id FROM public.gacha_history 
+          WHERE user_id = roll_gacha_secure.user_id 
+          ORDER BY created_at DESC 
+          LIMIT 30
+      );
+
     RETURN results;
 END;
 $$;
@@ -648,6 +661,27 @@ CREATE POLICY "Users can view own suggestions" ON public.waifu_suggestions FOR S
 --
 
 CREATE POLICY "Waifus are viewable by everyone" ON public.waifu_pool FOR SELECT USING (true);
+
+
+--
+-- Name: gacha_history Gacha history is viewable by everyone; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY "Gacha history is viewable by everyone" ON public.gacha_history FOR SELECT USING (true);
+
+
+--
+-- Name: gacha_history Users can insert own gacha history; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY "Users can insert own gacha history" ON public.gacha_history FOR INSERT WITH CHECK ((auth.uid() = user_id));
+
+
+--
+-- Name: gacha_history; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.gacha_history ENABLE ROW LEVEL SECURITY;
 
 
 --

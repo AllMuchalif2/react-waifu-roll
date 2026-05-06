@@ -67,7 +67,7 @@ export default function ResetPassword() {
       <Navbar />
       <main className="px-4 max-w-sm mx-auto mt-10">
         <div className="card-neo bg-white animate-fade-in">
-          <h1 className="text-2xl font-black uppercase italic mb-2 text-center text-primary-blue">
+          <h1 className="text-2xl font-black uppercase italic mb-2 text-center text-primary">
             Setel Password Baru
           </h1>
           <p className="text-center text-xs font-bold text-text-muted mb-6">
@@ -94,14 +94,14 @@ export default function ResetPassword() {
                   type={showPassword ? 'text' : 'password'}
                   placeholder="Password Baru"
                   required
-                  className={`w-full pl-10 pr-12 py-3 border-2 rounded-xl outline-none transition-all font-sans font-bold ${errors.password ? 'border-danger bg-danger/5' : 'border-text-dark focus:border-primary-blue'}`}
+                  className={`w-full pl-10 pr-12 py-3 border-2 rounded-xl outline-none transition-all font-sans font-bold ${errors.password ? 'border-danger bg-danger/5' : 'border-text-dark focus:border-primary'}`}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted hover:text-primary-blue"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted hover:text-primary"
                 >
                   <i className={`fa-solid ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
                 </button>
@@ -116,14 +116,14 @@ export default function ResetPassword() {
                   type={showPassword ? 'text' : 'password'}
                   placeholder="Konfirmasi Password"
                   required
-                  className={`w-full pl-10 pr-12 py-3 border-2 rounded-xl outline-none transition-all font-sans font-bold ${errors.confirmPassword ? 'border-danger bg-danger/5' : 'border-text-dark focus:border-primary-blue'}`}
+                  className={`w-full pl-10 pr-12 py-3 border-2 rounded-xl outline-none transition-all font-sans font-bold ${errors.confirmPassword ? 'border-danger bg-danger/5' : 'border-text-dark focus:border-primary'}`}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted hover:text-primary-blue"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted hover:text-primary"
                 >
                   <i className={`fa-solid ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
                 </button>

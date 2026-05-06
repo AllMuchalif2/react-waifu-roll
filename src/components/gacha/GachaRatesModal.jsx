@@ -24,7 +24,7 @@ export default function GachaRatesModal({ isOpen, onClose }) {
               {r.label || r.tier} ({r.tier})
             </span>
             <div className="flex gap-3">
-              <span className="text-primary-blue font-black">
+              <span className="text-primary font-black">
                 {r.chance}%
               </span>
               <span className="text-text-main px-1 rounded font-bold">

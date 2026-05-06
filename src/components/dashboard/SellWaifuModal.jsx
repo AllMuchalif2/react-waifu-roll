@@ -29,7 +29,7 @@ export default function SellWaifuModal({
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setSellAmount(Math.max(1, sellAmount - 1))}
-                  className="w-8 h-8 rounded-lg border-2 border-text-dark flex items-center justify-center font-black hover:bg-primary-blue hover:text-white"
+                  className="w-8 h-8 rounded-lg border-2 border-text-dark flex items-center justify-center font-black hover:bg-primary hover:text-white"
                 >
                   -
                 </button>
@@ -46,7 +46,7 @@ export default function SellWaifuModal({
                   onClick={() =>
                     setSellAmount(Math.min(waifu.total, sellAmount + 1))
                   }
-                  className="w-8 h-8 rounded-lg border-2 border-text-dark flex items-center justify-center font-black hover:bg-primary-blue hover:text-white"
+                  className="w-8 h-8 rounded-lg border-2 border-text-dark flex items-center justify-center font-black hover:bg-primary hover:text-white"
                 >
                   +
                 </button>
@@ -57,7 +57,7 @@ export default function SellWaifuModal({
               <span className="text-[0.65rem] font-black uppercase opacity-50">
                 Total Koin
               </span>
-              <span className="text-secondary-yellow font-black text-xl drop-shadow-sm flex items-center gap-1">
+              <span className="text-secondary font-black text-xl drop-shadow-sm flex items-center gap-1">
                 <i className="fa-solid fa-coins"></i>{' '}
                 {(PRICE_MAP[waifu.tier] || 10) * sellAmount}
               </span>

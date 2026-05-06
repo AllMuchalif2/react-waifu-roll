@@ -22,7 +22,7 @@ export function useAdminSuggestions() {
       if (error) throw error;
       if (data) setSuggestions(data);
     } catch (err) {
-      console.error("Fetch suggestions error:", err);
+      console.error('Fetch suggestions error:', err);
     } finally {
       setLoading(false);
     }
@@ -37,7 +37,6 @@ export function useAdminSuggestions() {
       setLoading(true);
 
       if (newStatus === 'approved') {
-        // 1. Insert ke waifu_pool
         const { error: poolError } = await supabase.from('waifu_pool').insert([
           {
             jikan_id: suggestion.jikan_id,
@@ -47,9 +46,9 @@ export function useAdminSuggestions() {
           },
         ]);
 
-        if (poolError) throw new Error('Gagal memasukkan ke pool: ' + poolError.message);
+        if (poolError)
+          throw new Error('Gagal memasukkan ke pool: ' + poolError.message);
 
-        // 2. Insert ke waifu_changelogs
         await supabase.from('waifu_changelogs').insert([
           {
             action: 'ADD',
@@ -59,7 +58,6 @@ export function useAdminSuggestions() {
         ]);
       }
 
-      // 3. Update status saran
       const { error: updateError } = await supabase
         .from('waifu_suggestions')
         .update({ status: newStatus })
@@ -70,7 +68,7 @@ export function useAdminSuggestions() {
       await fetchSuggestions();
       return { error: null };
     } catch (err) {
-      console.error("Update status error:", err);
+      console.error('Update status error:', err);
       return { error: err.message };
     } finally {
       setLoading(false);

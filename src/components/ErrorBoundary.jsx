@@ -24,7 +24,7 @@ class ErrorBoundary extends React.Component {
             <div className="text-danger mb-4">
               <i className="fa-solid fa-triangle-exclamation text-6xl"></i>
             </div>
-            <h1 className="text-2xl font-black mb-2 uppercase italic text-[#1a1a1a]">
+            <h1 className="text-2xl font-black mb-2 uppercase italic text-text-main">
               Waduh, Error!
             </h1>
             <p className="text-gray-600 mb-6 font-bold text-sm">

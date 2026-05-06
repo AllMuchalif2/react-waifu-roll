@@ -46,9 +46,9 @@ export default function Rank() {
     <>
       <Navbar />
       <main className="px-4 max-w-md mx-auto pb-24 mt-4">
-        <div className="card-neo bg-primary-blue text-white mb-6 py-4 shadow-[6px_6px_0px_#ffea00]">
+        <div className="card-neo bg-primary text-white mb-6 py-4 shadow-[6px_6px_0px_#ffea00]">
           <h1 className="text-xl font-black text-center uppercase italic flex items-center justify-center gap-2">
-            <i className="fa-solid fa-trophy text-secondary-yellow"></i>
+            <i className="fa-solid fa-trophy text-secondary"></i>
             Top Players
           </h1>
         </div>
@@ -58,7 +58,7 @@ export default function Rank() {
             Menghitung peringkat...
           </div>
         ) : (
-          <div className="card-neo p-0 overflow-hidden border-2 border-text-dark shadow-[4px_4px_0px_#1a1a1a]">
+          <div className="card-neo p-0 overflow-hidden border-2 border-text-dark shadow-[4px_4px_0px_var(--border)]">
             <table className="w-full text-left border-collapse">
               <thead className="bg-text-dark text-text-main">
                 <tr className="text-[0.65rem] uppercase tracking-wider font-black">
@@ -72,10 +72,10 @@ export default function Rank() {
                 {leaders.map((player, index) => (
                   <tr
                     key={index}
-                    className="border-b-2 border-text-dark last:border-0 font-bold text-xs hover:bg-primary-blue/5 transition-colors"
+                    className="border-b-2 border-text-dark last:border-0 font-bold text-xs hover:bg-primary/5 transition-colors"
                   >
                     <td className="p-3">{index + 1}</td>
-                    <td className="p-3 text-primary-blue truncate max-w-[80px]">
+                    <td className="p-3 text-primary truncate max-w-[80px]">
                       {player.username}
                     </td>
                     <td className="p-3 text-center">
@@ -85,7 +85,7 @@ export default function Rank() {
                     </td>
                     <td className="p-3 text-right">
                       <div className="flex items-center justify-end gap-1">
-                        <i className="fa-solid fa-star text-secondary-yellow text-[0.6rem]"></i>
+                        <i className="fa-solid fa-star text-secondary text-[0.6rem]"></i>
                         {player.totalPoints.toLocaleString()}
                       </div>
                     </td>

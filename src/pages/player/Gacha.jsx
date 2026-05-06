@@ -36,7 +36,7 @@ export default function Gacha() {
       <Navbar />
       <main className="px-4 max-w-md mx-auto text-center pb-24">
         <div className="flex justify-center gap-2 mb-8">
-          <div className="inline-flex items-center gap-2 bg-border-main text-bg-main px-4 py-2 rounded-xl font-bold border-2 border-primary-blue shadow-[4px_4px_0px_var(--color-secondary-yellow)]">
+          <div className="inline-flex items-center gap-2 bg-border-main text-bg-main px-4 py-2 rounded-xl font-bold border-2 border-primary shadow-[4px_4px_0px_var(--color-secondary)]">
             <i className="fa-solid fa-dice"></i> Dadu: {profile.dice_count}
           </div>
           <button
@@ -44,7 +44,7 @@ export default function Gacha() {
             className="w-10 h-10 bg-card-bg border-2 border-border-main rounded-xl flex items-center justify-center shadow-[4px_4px_0px_var(--border)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all"
             title="Info Rate"
           >
-            <i className="fa-solid fa-circle-info text-primary-blue"></i>
+            <i className="fa-solid fa-circle-info text-primary"></i>
           </button>
         </div>
 

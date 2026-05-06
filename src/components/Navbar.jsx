@@ -22,8 +22,8 @@ export default function Navbar() {
         <i
           className={`fa-solid ${
             theme === 'light'
-              ? 'fa-moon text-primary-blue'
-              : 'fa-sun text-secondary-yellow'
+              ? 'fa-moon text-primary'
+              : 'fa-sun text-secondary'
           }`}
         ></i>
       </button>

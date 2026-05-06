@@ -15,8 +15,8 @@ export default function AdminNavbar() {
   const navClass = (path) =>
     `px-3 py-2 rounded-lg font-bold text-xs uppercase transition-all ${
       location.pathname === path
-        ? 'bg-primary-blue text-white shadow-[2px_2px_0px_var(--border)]'
-        : 'text-text-muted hover:bg-gray-100 dark:hover:bg-gray-800'
+        ? 'bg-primary text-white shadow-[2px_2px_0px_var(--border)]'
+        : 'text-text-muted hover:bg-text-main/10 hover:text-text-main'
     }`;
 
   return (
@@ -51,7 +51,7 @@ export default function AdminNavbar() {
             className="w-8 h-8 flex items-center justify-center border-2 border-border-main rounded-lg bg-card-bg shadow-[2px_2px_0px_var(--border)] active:translate-x-px active:translate-y-px active:shadow-none transition-all"
           >
             <i
-              className={`fa-solid ${theme === 'light' ? 'fa-moon text-primary-blue' : 'fa-sun text-secondary-yellow'}`}
+              className={`fa-solid ${theme === 'light' ? 'fa-moon text-primary' : 'fa-sun text-secondary'}`}
             ></i>
           </button>
 
@@ -59,7 +59,7 @@ export default function AdminNavbar() {
 
           <Link
             to="/dashboard"
-            className="text-[0.65rem] font-bold text-primary-blue no-underline border-b border-primary-blue"
+            className="text-[0.65rem] font-bold text-primary no-underline border-b border-primary"
           >
             Ke Player
           </Link>

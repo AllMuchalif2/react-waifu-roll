@@ -46,7 +46,7 @@ export default function ForgotPassword() {
       <Navbar />
       <main className="px-4 max-w-sm mx-auto mt-10">
         <div className="card-neo bg-white animate-fade-in">
-          <h1 className="text-2xl font-black uppercase italic mb-2 text-center text-primary-blue">
+          <h1 className="text-2xl font-black uppercase italic mb-2 text-center text-primary">
             Lupa Password?
           </h1>
           <p className="text-center text-xs font-bold text-text-muted mb-6">
@@ -73,7 +73,7 @@ export default function ForgotPassword() {
                   type="email"
                   placeholder="Email Akun Anda"
                   required
-                  className={`w-full pl-10 pr-4 py-3 border-2 rounded-xl outline-none transition-all font-sans font-bold ${fieldError ? 'border-danger bg-danger/5' : 'border-text-dark focus:border-primary-blue'}`}
+                  className={`w-full pl-10 pr-4 py-3 border-2 rounded-xl outline-none transition-all font-sans font-bold ${fieldError ? 'border-danger bg-danger/5' : 'border-text-dark focus:border-primary'}`}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
@@ -96,7 +96,7 @@ export default function ForgotPassword() {
 
           <div className="mt-6 text-center text-xs font-black">
             Ingat password Anda?{' '}
-            <Link to="/login" className="text-primary-blue uppercase hover:underline">
+            <Link to="/login" className="text-primary uppercase hover:underline">
               Kembali Login
             </Link>
           </div>

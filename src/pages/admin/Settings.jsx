@@ -82,7 +82,7 @@ export default function AdminSettings() {
     <>
       <Navbar />
       <main className="px-4 max-w-2xl mx-auto pb-24 mt-6">
-        <div className="card-neo bg-primary-blue text-white mb-8 p-6 shadow-[8px_8px_0px_#1a1a1a] relative overflow-hidden">
+        <div className="card-neo bg-primary text-white mb-8 p-6 shadow-[8px_8px_0px_var(--border)] relative overflow-hidden">
           <div className="flex justify-between items-start relative z-10">
             <div>
               <h1 className="text-2xl font-black uppercase italic tracking-tighter">
@@ -94,7 +94,7 @@ export default function AdminSettings() {
             </div>
             <Link 
               to="/admin" 
-              className="bg-white text-primary-blue px-3 py-1.5 rounded-lg font-black text-[0.6rem] uppercase border-2 border-text-dark shadow-[3px_3px_0px_#1a1a1a] active:translate-x-px active:translate-y-px active:shadow-none transition-all no-underline"
+              className="bg-white text-primary px-3 py-1.5 rounded-lg font-black text-[0.6rem] uppercase border-2 border-text-dark shadow-[3px_3px_0px_var(--border)] active:translate-x-px active:translate-y-px active:shadow-none transition-all no-underline"
             >
               <i className="fa-solid fa-arrow-left mr-1"></i> Kembali
             </Link>
@@ -118,14 +118,14 @@ export default function AdminSettings() {
                     Harga Jual
                   </label>
                   <div className="relative">
-                    <i className="fa-solid fa-coins absolute left-3 top-1/2 -translate-y-1/2 text-secondary-yellow text-xs"></i>
+                    <i className="fa-solid fa-coins absolute left-3 top-1/2 -translate-y-1/2 text-secondary text-xs"></i>
                     <input
                       type="number"
                       value={item.sell_price}
                       onChange={(e) =>
                         handleUpdate(item.tier, 'sell_price', e.target.value)
                       }
-                      className="w-full pl-8 pr-3 py-2 border-2 border-text-dark rounded-lg font-black text-sm outline-none focus:border-primary-blue"
+                      className="w-full pl-8 pr-3 py-2 border-2 border-text-dark rounded-lg font-black text-sm outline-none focus:border-primary"
                     />
                   </div>
                 </div>
@@ -135,7 +135,7 @@ export default function AdminSettings() {
                     Drop Chance (%)
                   </label>
                   <div className="relative">
-                    <i className="fa-solid fa-percentage absolute left-3 top-1/2 -translate-y-1/2 text-primary-blue text-xs"></i>
+                    <i className="fa-solid fa-percentage absolute left-3 top-1/2 -translate-y-1/2 text-primary text-xs"></i>
                     <input
                       type="number"
                       step="0.01"
@@ -143,7 +143,7 @@ export default function AdminSettings() {
                       onChange={(e) =>
                         handleUpdate(item.tier, 'drop_chance', e.target.value)
                       }
-                      className="w-full pl-8 pr-3 py-2 border-2 border-text-dark rounded-lg font-black text-sm outline-none focus:border-primary-blue"
+                      className="w-full pl-8 pr-3 py-2 border-2 border-text-dark rounded-lg font-black text-sm outline-none focus:border-primary"
                     />
                   </div>
                 </div>

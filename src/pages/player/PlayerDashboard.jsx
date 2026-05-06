@@ -73,7 +73,7 @@ export default function PlayerDashboard() {
     <>
       <Navbar />
       <main className="px-4 max-w-3xl mx-auto pb-24">
-        <div className="card-neo mb-6 bg-text-dark text-text-main border-primary-blue shadow-[6px_6px_0px_#3d5afe]">
+        <div className="card-neo mb-6 bg-text-dark text-text-main border-primary shadow-[6px_6px_0px_#3d5afe]">
           <ProfileHeader user={user} profile={profile} />
           <DashboardStats
             profile={profile}

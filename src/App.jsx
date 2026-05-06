@@ -42,12 +42,12 @@ export default function App() {
           position="top-center"
           toastOptions={{
             style: {
-              border: '2px solid #1a1a1a',
+              border: '2px solid var(--border)',
               padding: '16px',
-              color: '#1a1a1a',
+              color: 'var(--border)',
               fontWeight: '900',
               borderRadius: '12px',
-              boxShadow: '4px 4px 0px #1a1a1a',
+              boxShadow: '4px 4px 0px var(--border)',
               background: '#fff',
             },
           }}

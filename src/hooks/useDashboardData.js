@@ -45,7 +45,7 @@ export function useDashboardData(user, profile, fetchProfile) {
         setInventory(Object.values(grouped).sort((a, b) => b.total - a.total));
       }
     } catch (err) {
-      console.error("Fetch inventory error:", err);
+      console.error('Fetch inventory error:', err);
     } finally {
       setLoading(false);
     }
@@ -57,10 +57,10 @@ export function useDashboardData(user, profile, fetchProfile) {
 
   const handleDailyClaim = async () => {
     try {
-      // Panggil Database Function (RPC) - AMAN
-      const { data, error: rpcError } = await supabase.rpc('claim_daily_secure');
+      const { data, error: rpcError } =
+        await supabase.rpc('claim_daily_secure');
 
-      if (rpcError) throw new Error(rpcError.message || "Gagal klaim hadiah.");
+      if (rpcError) throw new Error(rpcError.message || 'Gagal klaim hadiah.');
 
       toast.success(data.message || '+10 Dadu Berhasil Diklaim!');
       await fetchProfile(user.id);
@@ -73,9 +73,8 @@ export function useDashboardData(user, profile, fetchProfile) {
   const confirmBuyDice = async () => {
     try {
       setLoading(true);
-      // Panggil Database Function (RPC) - AMAN & ANTI-CHEAT
-      const { data, error } = await supabase.rpc('buy_dice_secure', { 
-        amount: buyAmount 
+      const { data, error } = await supabase.rpc('buy_dice_secure', {
+        amount: buyAmount,
       });
 
       if (error) throw new Error(error.message || 'Gagal membeli dadu.');
@@ -107,21 +106,23 @@ export function useDashboardData(user, profile, fetchProfile) {
       const finalAmount = Math.min(sellAmount, sellingWaifu.total);
       const idsToSell = sellingWaifu.instanceIds.slice(0, finalAmount);
 
-      // Panggil Database Function (RPC) - AMAN & ANTI-CHEAT
-      const { data, error: rpcError } = await supabase.rpc('sell_waifus_secure', { 
-        instance_ids: idsToSell 
-      });
+      const { data, error: rpcError } = await supabase.rpc(
+        'sell_waifus_secure',
+        {
+          instance_ids: idsToSell,
+        },
+      );
 
-      if (rpcError) throw new Error(rpcError.message || "Gagal menjual waifu.");
+      if (rpcError) throw new Error(rpcError.message || 'Gagal menjual waifu.');
 
       toast.success(`Berhasil menjual waifu! +${data.earned} koin.`);
-      
+
       await fetchProfile(user.id);
       await fetchInventory();
       setSellingWaifu(null);
     } catch (err) {
-      console.error("Sell error:", err);
-      toast.error(err.message || "Gagal menjual.");
+      console.error('Sell error:', err);
+      toast.error(err.message || 'Gagal menjual.');
     } finally {
       setLoading(false);
     }
@@ -139,7 +140,7 @@ export function useDashboardData(user, profile, fetchProfile) {
     const waifusToSell = inventory.filter((w) =>
       selectedPoolIds.includes(w.id),
     );
-    
+
     let totalEarned = 0;
     let totalUnits = 0;
     let allIdsToSell = [];
@@ -162,22 +163,27 @@ export function useDashboardData(user, profile, fetchProfile) {
       const { allIdsToSell } = calculateBulkSellInfo();
 
       if (allIdsToSell.length > 0) {
-        // Panggil Database Function (RPC) - AMAN & ANTI-CHEAT
-        const { data, error: rpcError } = await supabase.rpc('sell_waifus_secure', { 
-          instance_ids: allIdsToSell 
-        });
+        const { data, error: rpcError } = await supabase.rpc(
+          'sell_waifus_secure',
+          {
+            instance_ids: allIdsToSell,
+          },
+        );
 
-        if (rpcError) throw new Error(rpcError.message || "Gagal menjual waifu massal.");
+        if (rpcError)
+          throw new Error(rpcError.message || 'Gagal menjual waifu massal.');
 
-        toast.success(`Berhasil menjual ${allIdsToSell.length} waifu! +${data.earned} koin.`);
+        toast.success(
+          `Berhasil menjual ${allIdsToSell.length} waifu! +${data.earned} koin.`,
+        );
       }
 
       await fetchProfile(user.id);
       await fetchInventory();
       setSelectedPoolIds([]);
     } catch (err) {
-      console.error("Bulk sell error:", err);
-      toast.error(err.message || "Gagal menjual massal.");
+      console.error('Bulk sell error:', err);
+      toast.error(err.message || 'Gagal menjual massal.');
     } finally {
       setLoading(false);
     }

@@ -27,7 +27,7 @@ export default function SuggestionCard({ suggestion: s, onUpdateStatus }) {
             <>
               <button
                 onClick={() => onUpdateStatus(s, 'approved')}
-                className="flex-1 border-2 border-border-main bg-primary-blue text-white px-2 py-1 rounded-lg text-[0.6rem] font-black uppercase shadow-[2px_2px_0px_var(--border)] active:translate-x-px active:translate-y-px active:shadow-none"
+                className="flex-1 border-2 border-border-main bg-primary text-white px-2 py-1 rounded-lg text-[0.6rem] font-black uppercase shadow-[2px_2px_0px_var(--border)] active:translate-x-px active:translate-y-px active:shadow-none"
               >
                 Terima
               </button>
@@ -42,7 +42,7 @@ export default function SuggestionCard({ suggestion: s, onUpdateStatus }) {
           {s.status !== 'pending' && (
             <div
               className={`w-full text-center py-1 rounded-lg border-2 border-border-main text-[0.6rem] font-black uppercase ${
-                s.status === 'approved' ? 'bg-primary-blue' : 'bg-danger'
+                s.status === 'approved' ? 'bg-primary' : 'bg-danger'
               } text-white`}
             >
               {s.status}

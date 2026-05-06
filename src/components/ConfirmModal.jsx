@@ -11,10 +11,10 @@ export default function ConfirmModal({
   if (!isOpen) return null;
 
   const typeClasses = {
-    primary: 'border-primary-blue text-primary-blue bg-primary-blue/10',
+    primary: 'border-primary text-primary bg-primary/10',
     danger: 'border-danger text-danger bg-danger/10',
     warning:
-      'border-secondary-yellow text-secondary-yellow bg-secondary-yellow/10',
+      'border-secondary text-secondary bg-secondary/10',
   };
 
   const btnClasses = {
@@ -26,7 +26,7 @@ export default function ConfirmModal({
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-6 animate-fade-in">
       <div
-        className={`card-neo w-full max-w-sm bg-card-bg border-2 animate-zoom-in ${type === 'danger' ? 'border-danger' : 'border-primary-blue'}`}
+        className={`card-neo w-full max-w-sm bg-card-bg border-2 animate-zoom-in ${type === 'danger' ? 'border-danger' : 'border-primary'}`}
       >
         <div className="flex flex-col items-center text-center">
           <div

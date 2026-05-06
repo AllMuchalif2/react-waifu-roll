@@ -41,8 +41,8 @@ export default function Home() {
         {/* HERO SECTION */}
         <section className="stagger-item flex flex-col items-center text-center pt-6">
           <div className="relative mb-8 floating">
-            <div className="absolute -inset-4 bg-primary-blue rounded-full blur-2xl opacity-20 animate-pulse"></div>
-            <div className="w-32 h-32 bg-white rounded-4xl border-4 border-text-dark flex items-center justify-center p-4 shadow-[8px_8px_0px_#1a1a1a] relative z-10">
+            <div className="absolute -inset-4 bg-primary rounded-full blur-2xl opacity-20 animate-pulse"></div>
+            <div className="w-32 h-32 bg-white rounded-4xl border-4 border-text-dark flex items-center justify-center p-4 relative z-10">
               <img
                 src="/assets/img/logo.png"
                 alt="MYBINI Logo"
@@ -52,7 +52,7 @@ export default function Home() {
           </div>
 
           <h1 className="text-4xl text-black italic uppercase tracking-tighter leading-none mb-4 drop-shadow-[4px_4px_0px_rgba(0,0,0,0.1)]">
-            <span className="text-primary-blue">MYBINI</span> <br />
+            <span className="text-primary">MYBINI</span> <br />
             <span className="text-text-main text-2xl opacity-50">
               GACHA WAIFU
             </span>
@@ -73,9 +73,9 @@ export default function Home() {
 
         {/* FEATURE CARDS */}
         <section className="grid grid-cols-1 gap-4">
-          <div className="stagger-item card-neo bg-secondary-yellow p-5 group hover:-translate-y-1 transition-transform">
+          <div className="stagger-item card-neo bg-secondary p-5 group hover:-translate-y-1 transition-transform">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-white rounded-xl border-2 border-text-dark flex items-center justify-center text-xl shadow-[4px_4px_0px_#1a1a1a]">
+              <div className="w-12 h-12 bg-white rounded-xl border-2 border-text-dark flex items-center justify-center text-xl shadow-[4px_4px_0px_var(--border)]">
                 <i className="fa-solid fa-heart text-danger"></i>
               </div>
               <div className="flex-1">
@@ -89,10 +89,10 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="stagger-item card-neo bg-primary-blue text-white p-5 group hover:-translate-y-1 transition-transform">
+          <div className="stagger-item card-neo bg-primary text-white p-5 group hover:-translate-y-1 transition-transform">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-white rounded-xl border-2 border-text-dark flex items-center justify-center text-xl shadow-[4px_4px_0px_#1a1a1a] text-text-dark">
-                <i className="fa-solid fa-trophy text-secondary-yellow"></i>
+              <div className="w-12 h-12 bg-white rounded-xl border-2 border-text-dark flex items-center justify-center text-xl shadow-[4px_4px_0px_var(--border)] text-text-dark">
+                <i className="fa-solid fa-trophy text-secondary"></i>
               </div>
               <div className="flex-1">
                 <h3 className="text-black uppercase text-sm italic">
@@ -107,8 +107,8 @@ export default function Home() {
 
           <div className="stagger-item card-neo bg-white p-5 group hover:-translate-y-1 transition-transform">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-gray-100 rounded-xl border-2 border-text-dark flex items-center justify-center text-xl shadow-[4px_4px_0px_#1a1a1a] text-text-dark">
-                <i className="fa-solid fa-clock-rotate-left text-primary-blue"></i>
+              <div className="w-12 h-12 bg-gray-100 rounded-xl border-2 border-text-dark flex items-center justify-center text-xl shadow-[4px_4px_0px_var(--border)] text-text-dark">
+                <i className="fa-solid fa-clock-rotate-left text-primary"></i>
               </div>
               <div className="flex-1">
                 <h3 className="text-black uppercase text-sm italic">
@@ -124,7 +124,7 @@ export default function Home() {
 
         {/* CTA SECTION */}
         <section className="stagger-item card-neo bg-text-dark text-white p-8 text-center relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-primary-blue opacity-20 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl"></div>
+          <div className="absolute top-0 right-0 w-24 h-24 bg-primary opacity-20 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl"></div>
           <h2 className="text-xl text-text-main italic uppercase mb-3">
             Siap Menjadi Legend?
           </h2>
@@ -154,7 +154,7 @@ export default function Home() {
             <a
               href="https://instagram.com/allmuchalif2"
               target="_blank"
-              className="no-underline hover:text-primary-blue transition-all"
+              className="no-underline hover:text-primary transition-all"
             >
               @AllMuchalif2
             </a>

@@ -15,8 +15,8 @@ export default function GachaRollArea({
     <div className="relative min-h-[300px] flex flex-col items-center justify-center mt-4">
       {isFetching ? (
         <div className="p-1 text-center">
-          <div className="w-16 h-16 border-4 border-primary-blue border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-sm font-black text-primary-blue animate-pulse uppercase italic">
+          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-sm font-black text-primary animate-pulse uppercase italic">
             Sedang Menggacha...
           </p>
         </div>
@@ -42,7 +42,7 @@ export default function GachaRollArea({
       {result && !isFetching && (
         <div className={`result-card w-full ${isMultiple ? 'max-w-md' : 'max-w-[280px]'} flex flex-col items-center animate-zoom-in`}>
           <div className="card-neo p-4 text-center w-full overflow-hidden">
-            <h3 className="text-sm text-primary-blue mb-3 font-black uppercase italic border-b-2 border-border-main pb-2">
+            <h3 className="text-sm text-primary mb-3 font-black uppercase italic border-b-2 border-border-main pb-2">
               Selamat! Kamu mendapatkan:
             </h3>
             
@@ -54,7 +54,7 @@ export default function GachaRollArea({
                   
                   return (
                     <div key={idx} className="relative group animate-fade-in" style={{ animationDelay: `${idx * 50}ms` }}>
-                      <div className={`border rounded-md overflow-hidden bg-white transition-transform hover:scale-105 shadow-[1px_1px_0px_#1a1a1a] ${isHighTier ? 'border-primary-blue' : 'border-border-main'}`}>
+                      <div className={`border rounded-md overflow-hidden bg-white transition-transform hover:scale-105 shadow-[1px_1px_0px_var(--border)] ${isHighTier ? 'border-primary' : 'border-border-main'}`}>
                         <img src={waifu.image_url} alt={waifu.name} className="w-full aspect-square object-cover" />
                         <div className={`absolute top-0 right-0 px-1 rounded-bl-md text-[0.55rem] font-black border-l border-b border-border-main ${style.color} ${style.textColor}`}>
                           {waifu.tier}

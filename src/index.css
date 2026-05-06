@@ -6,11 +6,11 @@
   --color-text-main: var(--text);
   --color-text-muted: var(--text-muted);
   --color-border-main: var(--border);
-  
-  --color-primary-blue: #3d5afe;
-  --color-secondary-yellow: #ffea00;
+  --color-primary: #3d5afe;
+  --color-secondary: #ffea00;
   --color-danger: #ff1744;
-
+  --color-success: #10b981;
+  --color-purple: #9333ea;
   --font-sans: "Lexend", sans-serif;
 }
 
@@ -41,7 +41,9 @@
     min-height: 100vh;
   }
 
-  h1, h2, h3 {
+  h1,
+  h2,
+  h3 {
     @apply font-extrabold leading-tight;
   }
 
@@ -50,33 +52,38 @@
     box-shadow: 4px 4px 0px var(--border);
   }
 
-  .btn-neo, .btn-neo-secondary, .btn-neo-danger, .btn-neo-outline {
+  .btn-neo,
+  .btn-neo-secondary,
+  .btn-neo-danger,
+  .btn-neo-outline {
     @apply inline-flex items-center justify-center gap-2 w-full px-6 py-3 border-2 border-border-main rounded-xl font-semibold uppercase cursor-pointer transition-all duration-150;
   }
 
-  /* Hover States */
-  .btn-neo:hover, .btn-neo-secondary:hover, .btn-neo-danger:hover, .btn-neo-outline:hover {
+  .btn-neo:hover,
+  .btn-neo-secondary:hover,
+  .btn-neo-danger:hover,
+  .btn-neo-outline:hover {
     @apply -translate-x-px -translate-y-px brightness-110;
   }
 
   .btn-neo {
-    @apply bg-primary-blue text-white;
-    box-shadow: 6px 6px 0px var(--color-secondary-yellow);
+    @apply bg-primary text-white;
+    box-shadow: 6px 6px 0px var(--color-secondary);
   }
 
   .btn-neo:active {
     @apply translate-x-px translate-y-px brightness-95;
-    box-shadow: 3px 3px 0px var(--color-secondary-yellow);
+    box-shadow: 3px 3px 0px var(--color-secondary);
   }
 
   .btn-neo-secondary {
-    @apply bg-secondary-yellow text-[#1a1a1a];
-    box-shadow: 6px 6px 0px var(--color-primary-blue);
+    @apply bg-secondary text-text-main;
+    box-shadow: 6px 6px 0px var(--color-primary);
   }
 
   .btn-neo-secondary:active {
     @apply translate-x-px translate-y-px brightness-95;
-    box-shadow: 3px 3px 0px var(--color-primary-blue);
+    box-shadow: 3px 3px 0px var(--color-primary);
   }
 
   .btn-neo-danger {
@@ -91,24 +98,27 @@
 
   .btn-neo-outline {
     @apply bg-card-bg text-text-main;
-    box-shadow: 4px 4px 0px #1a1a1a;
+    box-shadow: 4px 4px 0px var(--border);
   }
 
   .btn-neo-outline:active {
     @apply translate-x-px translate-y-px brightness-95;
-    box-shadow: 2px 2px 0px #1a1a1a;
+    box-shadow: 2px 2px 0px var(--border);
   }
 
   .dark .btn-neo-outline {
     box-shadow: 4px 4px 0px #f8f9fa;
   }
 
-  .btn-neo:disabled, .btn-neo-secondary:disabled, .btn-neo-danger:disabled, .btn-neo-outline:disabled {
+  .btn-neo:disabled,
+  .btn-neo-secondary:disabled,
+  .btn-neo-danger:disabled,
+  .btn-neo-outline:disabled {
     @apply opacity-60 cursor-not-allowed translate-x-0 translate-y-0 shadow-none;
   }
 
-  /* Input styles for dark mode compatibility */
-  input, select {
+  input,
+  select {
     @apply bg-card-bg text-text-main border-border-main;
   }
 
@@ -118,13 +128,25 @@
   }
 
   @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
   }
 
   @keyframes zoomIn {
-    from { transform: scale(0.95); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
+    from {
+      transform: scale(0.95);
+      opacity: 0;
+    }
+
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
   }
 
   .animate-fade-in {
@@ -135,16 +157,26 @@
     animation: zoomIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
   }
 
-  /* Gacha Effects */
   .screen-flash {
     @apply fixed inset-0 z-[100] pointer-events-none;
     animation: flashFade 2s ease-out forwards;
   }
 
   @keyframes flashFade {
-    0% { opacity: 1; transform: scale(1); }
-    20% { opacity: 1; transform: scale(1.1); }
-    100% { opacity: 0; transform: scale(1); }
+    0% {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    20% {
+      opacity: 1;
+      transform: scale(1.1);
+    }
+
+    100% {
+      opacity: 0;
+      transform: scale(1);
+    }
   }
 
   .flash-ssr {

@@ -60,7 +60,7 @@ export default function AdminDashboard() {
         </div>
 
         <div className="grid grid-cols-2 gap-4 mb-6">
-          <div className="card-neo bg-primary-blue text-white p-4">
+          <div className="card-neo bg-primary text-white p-4">
             <div className="text-3xl font-black mb-1">
               {loading ? '...' : stats.totalPlayers}
             </div>
@@ -68,7 +68,7 @@ export default function AdminDashboard() {
               Total Players
             </div>
           </div>
-          <div className="card-neo bg-secondary-yellow text-text-dark p-4">
+          <div className="card-neo bg-secondary text-text-dark p-4">
             <div className="text-3xl text-black mb-1">
               {loading ? '...' : stats.totalWaifus}
             </div>
@@ -80,7 +80,7 @@ export default function AdminDashboard() {
 
         <div className="card-neo mb-6">
           <h3 className="text-sm font-black mb-4 flex items-center gap-2">
-            <i className="fa-solid fa-chart-pie text-primary-blue"></i>
+            <i className="fa-solid fa-chart-pie text-primary"></i>
             DISTRIBUSI TIER
           </h3>
           <div className="grid grid-cols-3 gap-2">
@@ -90,7 +90,7 @@ export default function AdminDashboard() {
                   key={tier}
                   className="bg-main p-2 rounded-lg border-2 border-text-dark/10 flex flex-col items-center"
                 >
-                  <span className="text-[0.6rem] font-black text-primary-blue">
+                  <span className="text-[0.6rem] font-black text-primary">
                     {tier}
                   </span>
                   <span className="text-lg font-black text-text-dark">
@@ -104,7 +104,7 @@ export default function AdminDashboard() {
 
         <Link
           to="/admin/simulator"
-          className="card-neo mb-4 bg-text-dark text-white p-4 no-underline flex items-center justify-between group hover:bg-black transition-colors"
+          className="card-neo mb-4 bg-primary  text-white p-4 no-underline flex items-center justify-between group hover:brightness-110 transition-all shadow-[6px_6px_0px_#ffea00]"
         >
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center border-2 border-white/20 text-white">
@@ -124,7 +124,7 @@ export default function AdminDashboard() {
 
         <Link
           to="/admin/settings"
-          className="card-neo mb-6 bg-primary-blue text-white p-4 no-underline flex items-center justify-between group hover:brightness-110 transition-all shadow-[6px_6px_0px_#ffea00]"
+          className="card-neo mb-6 bg-primary text-white p-4 no-underline flex items-center justify-between group hover:brightness-110 transition-all shadow-[6px_6px_0px_#ffea00]"
         >
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center border-2 border-white/20 text-white">
@@ -145,7 +145,7 @@ export default function AdminDashboard() {
         <div className="flex flex-col gap-3 mt-8">
           <Link
             to="/dashboard"
-            className="text-center text-sm font-bold text-text-muted no-underline hover:text-primary-blue transition-colors"
+            className="text-center text-sm font-bold text-text-muted no-underline hover:text-primary transition-colors"
           >
             &larr; Ke Dashboard Player
           </Link>
